@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Travel – Hotel Gothenburg</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --gold: #c9a84c;
+    --cream: #faf8f3;
+    --card-bg: #ffffff;
+    --text: #1a2740;
+    --muted: #6b7a99;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --border: #e4e0d6;
+    --accent: #1e4fa3;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --amber: #b45309;
+    --amber-light: #fffbeb;
+    --purple: #6d28d9;
+    --purple-light: #ede9fe;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
+
+  header { background:var(--navy); padding:0 48px; display:flex; align-items:center; justify-content:space-between; height:68px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,.35); }
+  .logo { font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:22px; letter-spacing:.5px; }
+  .logo span { color:#fff; }
+  .header-meta { font-size:13px; color:rgba(255,255,255,.55); display:flex; gap:24px; align-items:center; }
+  .status-pill { background:rgba(201,168,76,.18); border:1px solid var(--gold); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:.4px; }
+
+  main { max-width:980px; margin:0 auto; padding:48px 24px 80px; }
+
+  .steps { display:flex; align-items:center; margin-bottom:44px; }
+  .step { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; color:var(--muted); }
+  .step.active { color:var(--accent); }
+  .step.done { color:var(--green); }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; border:2px solid currentColor; flex-shrink:0; }
+  .step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 12px; }
+  .step-line.done { background:var(--green); }
+
+  .page-nav { display:flex; gap:12px; margin-bottom:28px; }
+  .nav-btn { background:#fff; border:2px solid var(--border); color:var(--navy); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color .2s,background .2s; }
+  .nav-btn:hover { border-color:var(--accent); background:#f8faff; }
+
+  .section-heading { display:flex; align-items:baseline; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+  .section-heading h1 { font-family:'Cormorant Garamond',serif; font-size:30px; color:var(--navy); }
+  .route-badge { background:var(--navy); color:var(--gold); padding:4px 14px; border-radius:4px; font-size:13px; font-weight:600; letter-spacing:1px; }
+  .subtitle { font-size:14px; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+
+  /* ── Split stay timeline ── */
+  .timeline-box {
+    background:#fff; border:2px solid var(--border); border-radius:14px;
+    padding:28px 32px; margin-bottom:28px;
+  }
+  .timeline-title { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--navy); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .timeline { display:flex; align-items:stretch; gap:0; }
+  .tl-block {
+    flex:1; border-radius:10px; padding:16px 18px; position:relative;
+  }
+  .tl-block.confirmed { background:var(--green-light); border:2px solid #86efac; }
+  .tl-block.pending { background:var(--purple-light); border:2px dashed #a78bfa; }
+  .tl-block.alex { background:#f0f9ff; border:2px dashed #7dd3fc; }
+  .tl-arrow {
+    display:flex; align-items:center; padding:0 12px;
+    font-size:20px; color:var(--muted);
+  }
+  .tl-date { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .tl-hotel { font-size:15px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+  .tl-nights { font-size:12px; color:var(--muted); margin-bottom:8px; }
+  .tl-status { font-size:11px; font-weight:700; padding:3px 10px; border-radius:10px; display:inline-block; }
+  .status-confirmed { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .status-pending { background:var(--purple-light); color:var(--purple); border:1px solid #a78bfa; }
+  .status-alex { background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; }
+
+  .limitation-notice {
+    background:var(--amber-light); border-left:4px solid var(--gold);
+    padding:14px 18px; border-radius:0 8px 8px 0; margin-bottom:28px;
+    font-size:14px; color:var(--amber); line-height:1.6;
+  }
+  .limitation-notice strong { color:#92400e; }
+
+  /* ── Justification box ── */
+  .justification-box { background:linear-gradient(135deg,#0f2a4a 0%,#1e4fa3 100%); border-radius:14px; padding:28px 32px; margin-bottom:32px; color:#fff; }
+  .just-title { font-family:'Cormorant Garamond',serif; font-size:20px; margin-bottom:16px; color:var(--gold); }
+  .just-points { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .just-points li { display:flex; gap:12px; font-size:14px; line-height:1.55; color:rgba(255,255,255,.9); }
+  .just-points li::before { content:'✓'; color:var(--gold); font-weight:700; flex-shrink:0; margin-top:1px; }
+  .just-points li.info::before { content:'ℹ'; color:#7dd3fc; }
+
+  /* ── Compare grid ── */
+  .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:32px; }
+  .compare-card { background:#fff; border:2px solid var(--border); border-radius:12px; overflow:hidden; }
+  .compare-card.winner { border-color:#86efac; }
+  .compare-card.neutral { border-color:#c4b5fd; }
+  .compare-header { padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .compare-header .hotel-name { font-weight:700; font-size:14px; color:var(--navy); }
+  .verdict { font-size:11px; font-weight:700; padding:3px 10px; border-radius:10px; }
+  .verdict-win { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .verdict-alt { background:var(--purple-light); color:var(--purple); border:1px solid #a78bfa; }
+  .compare-body { padding:14px 18px; }
+  .compare-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+  .compare-row:last-child { border-bottom:none; }
+  .compare-row .metric { color:var(--muted); font-weight:500; }
+  .val-good { color:var(--green); font-weight:700; }
+  .val-neutral { color:var(--navy); font-weight:600; }
+  .val-mid { color:var(--amber); font-weight:600; }
+
+  /* ── Hotel cards ── */
+  .hotels-label { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+
+  .hotel-card { background:var(--card-bg); border:2px solid var(--border); border-radius:14px; margin-bottom:20px; overflow:hidden; transition:border-color .25s,box-shadow .25s; cursor:pointer; }
+  .hotel-card.selected { border-color:var(--accent); box-shadow:0 6px 28px rgba(30,79,163,.15); }
+  .hotel-card.recommended-card { border-color:#86efac; }
+  .hotel-card.recommended-card:hover { border-color:var(--green); }
+  .hotel-card.recommended-card.selected { border-color:var(--green); box-shadow:0 6px 28px rgba(26,122,74,.2); }
+  .hotel-card.alt-card { border-color:#c4b5fd; }
+  .hotel-card.alt-card.selected { border-color:var(--purple); box-shadow:0 6px 28px rgba(109,40,217,.15); }
+
+  .ribbon { background:var(--green); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+  .ribbon-alt { background:var(--purple); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+
+  .hotel-body { padding:24px; display:flex; gap:20px; }
+  .hotel-img { width:180px; height:130px; border-radius:10px; overflow:hidden; background:#e0e8f0; flex-shrink:0; }
+  .hotel-img img { width:100%; height:100%; object-fit:cover; }
+  .hotel-info { flex:1; }
+  .hotel-name { font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--navy); line-height:1.2; margin-bottom:3px; }
+  .stars { color:var(--gold); font-size:13px; letter-spacing:1px; margin-bottom:4px; }
+  .hotel-address { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .hotel-rating { display:inline-flex; align-items:center; gap:6px; margin-bottom:12px; }
+  .rating-score { background:var(--navy); color:#fff; font-size:13px; font-weight:700; padding:3px 8px; border-radius:6px; }
+  .rating-label { font-size:13px; font-weight:600; color:var(--navy); }
+  .rating-count { font-size:12px; color:var(--muted); }
+
+  .hotel-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .tag { font-size:11px; font-weight:600; padding:3px 10px; border-radius:10px; }
+  .tag-green { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .tag-blue { background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd; }
+  .tag-amber { background:#fef9c3; color:var(--amber); border:1px solid #fde047; }
+  .tag-purple { background:var(--purple-light); color:var(--purple); border:1px solid #a78bfa; }
+  .tag-red { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+
+  .distance-row { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+
+  .price-panel { display:flex; flex-direction:column; align-items:flex-end; gap:6px; padding:20px; border-left:1px solid var(--border); min-width:160px; }
+  .price-main { font-family:\'DM Sans\',sans-serif; font-size:28px; font-weight:800; }
+  .price-main.good { color:var(--green); }
+  .price-main.alt { color:var(--purple); }
+  .price-per { font-size:11px; color:var(--muted); }
+  .price-policy { font-size:11px; font-weight:600; }
+
+  .select-radio-hotel { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:border-color .2s; margin-bottom:8px; }
+  .hotel-card.selected .select-radio-hotel { border-color:var(--accent); background:var(--accent); }
+  .hotel-card.recommended-card.selected .select-radio-hotel { border-color:var(--green); background:var(--green); }
+  .hotel-card.alt-card.selected .select-radio-hotel { border-color:var(--purple); background:var(--purple); }
+  .select-radio-hotel::after { content:''; width:8px; height:8px; border-radius:50%; background:#fff; opacity:0; transition:opacity .2s; }
+  .hotel-card.selected .select-radio-hotel::after { opacity:1; }
+
+  /* Rooms */
+  .rooms-section { border-top:1px solid var(--border); }
+  .rooms-toggle { padding:10px 24px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--accent); font-weight:500; cursor:pointer; user-select:none; transition:background .15s; }
+  .rooms-toggle:hover { background:#f8faff; }
+  .chevron { transition:transform .3s; display:flex; align-items:center; }
+  .rooms-toggle.open .chevron { transform:rotate(180deg); }
+  .rooms-body { display:none; padding:16px 24px; background:#f8faff; border-top:1px solid var(--border); }
+  .rooms-body.open { display:block; }
+  .room-row { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:flex-start; gap:16px; font-size:13px; }
+  .room-row:last-child { margin-bottom:0; }
+  .room-name { flex:1; font-weight:600; color:var(--navy); line-height:1.4; }
+  .room-perks { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .room-perk { font-size:11px; color:var(--green); font-weight:500; }
+  .room-price { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; white-space:nowrap; }
+  .room-badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; white-space:nowrap; margin-top:4px; display:inline-block; }
+  .badge-chosen { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .badge-alt { background:#f1f5f9; color:var(--muted); border:1px solid #cbd5e1; }
+
+  /* Screenshot */
+  .screenshot-section { margin-top:10px; padding:14px 24px; border-top:1px dashed var(--border); }
+  .screenshot-section summary { font-size:12px; color:var(--muted); cursor:pointer; font-weight:500; list-style:none; display:flex; align-items:center; gap:6px; }
+  .screenshot-section summary::-webkit-details-marker { display:none; }
+  .screenshot-section summary::before { content:'📸'; }
+  .screenshot-img { margin-top:12px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+  .screenshot-img img { width:100%; display:block; }
+
+  /* CTA */
+  .cta-area { margin-top:36px; display:flex; align-items:center; justify-content:space-between; gap:16px; background:var(--card-bg); border:2px solid var(--border); border-radius:14px; padding:24px 28px; }
+  .cta-summary { flex:1; }
+  .cta-summary .selected-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin-bottom:4px; }
+  .cta-summary .selected-info { font-size:15px; font-weight:600; color:var(--navy); }
+  .cta-sub { font-size:12px; margin-top:4px; font-weight:600; }
+  .btn-secondary { background:transparent; color:var(--navy); border:2px solid var(--navy); padding:14px 24px; border-radius:10px; font-size:14px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; transition:background .2s; white-space:nowrap; }
+  .btn-secondary:hover { background:#f0f4fb; }
+
+  @media(max-width:640px) {
+    header { padding:0 20px; }
+    main { padding:28px 16px 60px; }
+    .hotel-body { flex-direction:column; }
+    .price-panel { flex-direction:row; align-items:center; border-left:none; border-top:1px solid var(--border); padding:14px 20px; min-width:unset; }
+    .hotel-img { width:100%; height:180px; }
+    .compare-grid { grid-template-columns:1fr; }
+    .cta-area { flex-direction:column; align-items:stretch; },.btn-secondary { width:100%; justify-content:center; }
+    .timeline { flex-direction:column; }
+    .tl-arrow { display:none; }
+  }
+
+  a.step {
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none; color:inherit;
+    font-size:13px; font-weight:500; color:var(--muted);
+    transition: opacity .2s;
+    cursor: pointer;
+  }
+  a.step:hover { opacity: .75; }
+  a.step.done { color:var(--green); }
+  a.step.active { color:var(--accent); font-weight:600; }
+  a.step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  a.step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+
+  .step-num { transition: transform .2s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Travel<span>Desk</span></div>
+  <div class="header-meta">
+    <span>Business Trip – Gothenburg</span>
+    <span class="status-pill">✓ Within Policy</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Steps -->
+      <div class="steps">
+    <a href="flight-blr-to-gso.html" class="step done"><div class="step-num">✓</div><span>BLR → GSO Flight</span></a>
+    <div class="step-line done"></div>
+    <a href="flight-gso-to-got.html" class="step done"><div class="step-num">✓</div><span>GSO → GOT Flight</span></a>
+    <div class="step-line done"></div>
+    <a href="hotel-gso.html" class="step done"><div class="step-num">✓</div><span>GSO Hotel</span></a>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-num">4</div><span>GOT Hotel</span></div>
+  </div>
+  <!-- Nav -->
+  <div class="page-nav"><a href="index.html" class="nav-btn">⌂ Home</a>
+    <a href="hotel-gso.html" class="nav-btn">← Back: GSO Hotel</a>
+  </div>
+
+  <!-- Heading -->
+  <div class="section-heading">
+    <h1>Hotel – Gothenburg</h1>
+    <span class="route-badge">GOT STAY</span>
+  </div>
+  <p class="subtitle">
+    6 June 2026 – 7 July 2026 (31 nights total) &nbsp;·&nbsp; Guest: John Philip &nbsp;·&nbsp; Max nightly rate: ₹18,428 &nbsp;·&nbsp;
+    Split stay due to Egencia 30-day advance booking restriction for Gothia Towers
+  </p>
+
+  <!-- ── Stay Timeline ── -->
+  <div class="timeline-box">
+    <div class="timeline-title">
+      📅 Full Gothenburg Stay — Split Booking Plan
+    </div>
+    <div class="timeline">
+      <div class="tl-block confirmed">
+        <div class="tl-date">6 Jun – 29 Jun 2026</div>
+        <div class="tl-hotel">Gothia Towers &amp; Upper House</div>
+        <div class="tl-nights">23 nights · ₹13,404/night</div>
+        <span class="tl-status status-confirmed">✓ To Be Booked Now</span>
+        <div style="font-size:12px;color:var(--green);margin-top:8px;">Booking available — within 30-day window ✓</div>
+      </div>
+      <div class="tl-arrow">→</div>
+      <div class="tl-block pending">
+        <div class="tl-date">29 Jun – 7 Jul 2026</div>
+        <div class="tl-hotel">Gothia Towers &amp; Upper House</div>
+        <div class="tl-nights">8 nights · Graduation Week</div>
+        <span class="tl-status status-pending">⏳ To Book Later</span>
+        <div style="font-size:12px;color:var(--purple);margin-top:8px;">Cannot book &gt;30 days in advance — will confirm closer to date</div>
+      </div>
+      <div class="tl-arrow">→</div>
+      <div class="tl-block alex">
+        <div class="tl-date">Graduation Week</div>
+        <div class="tl-hotel">Hotel TBC by Alex</div>
+        <div class="tl-nights">If Gothia unavailable</div>
+        <span class="tl-status status-alex">👤 Alex Coordinating</span>
+        <div style="font-size:12px;color:#0369a1;margin-top:8px;">Alex will confirm graduation week accommodation — not a blocker</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Limitation notice -->
+  <div class="limitation-notice">
+    <strong>⚠ Why a split booking?</strong> — Egencia does not allow booking Gothia Towers more than 30 days in advance. The full stay runs 6 Jun – 7 Jul (31 nights). As of the booking date, only the 6 Jun – 29 Jun period falls within the 30-day window. The graduation week portion (29 Jun – 7 Jul) will be booked separately once it opens, or coordinated by Alex. The hotel search for the full period (6 Jun – 7 Jul) does not show Gothia Towers, but it appears correctly in the 6 Jun – 29 Jun search — confirming the 30-day restriction is the only reason.
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <span style="font-size:12px;font-weight:600;color:#92400e;margin-top:2px;">Verify yourself:</span>
+      <a href="https://www.egencia.co.in/hotels/search?search_page=SEARCH_RESULTS&company_id=45534&source=HOTEL_WEBAPP&source_version=1.0&radius_unit=km&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&check_in_date=2026-06-06&check_out_date=2026-06-29&itid=null&adults_per_room=1&verbosity=1&start=0&count=30&pageNumber=0&isPaginationRequest=false&chain_id=" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #c9a84c;color:#92400e;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:background .2s;">
+        ✓ Jun 6–29 search (Gothia visible) ↗
+      </a>
+      <a href="https://www.egencia.co.in/hotels/search?search_page=SEARCH_RESULTS&company_id=45534&source=HOTEL_WEBAPP&source_version=1.0&radius_unit=km&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&check_in_date=2026-06-06&check_out_date=2026-07-07&itid=null&adults_per_room=1&verbosity=1&start=0&count=30&pageNumber=0&isPaginationRequest=false&chain_id=" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #f5b7b1;color:#c0392b;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:background .2s;">
+        ✗ Jun 6–Jul 7 search (Gothia missing) ↗
+      </a>
+    </div>
+  </div>
+
+  <!-- Justification -->
+  <div class="justification-box">
+    <div class="just-title">Why Gothia Towers is the right choice</div>
+    <ul class="just-points">
+      <li><strong>Volvo Group Negotiated Rate at ₹13,404/night</strong> — well within the ₹18,428 policy cap. Includes breakfast and Wi-Fi at a 4-star property.</li>
+      <li><strong>₹553 cheaper per night than Scandic Europa</strong> — Gothia Towers at ₹13,404 vs Scandic best breakfast-included rate at ₹13,957 (Standard Queen Bed). Over 23 nights that's a saving of <strong>₹12,719</strong>.</li>
+      <li><strong>Scandic Europa is where Mukesh stayed</strong> — benchmarked against a known precedent. Gothia Towers offers equivalent or better quality at a lower negotiated rate.</li>
+      <li class="info"><strong>Booking limitation is a system constraint, not a policy issue</strong> — Egencia restricts Gothia Towers availability to within 30 days of check-in. This is confirmed by the fact the hotel appears in the 6 Jun–29 Jun search but not the 6 Jun–7 Jul search. No policy exception required.</li>
+    </ul>
+  </div>
+
+  <!-- Quick compare -->
+  <div class="compare-grid">
+    <div class="compare-card winner">
+      <div class="compare-header">
+        <div class="hotel-name">🏆 Gothia Towers &amp; Upper House</div>
+        <span class="verdict verdict-win">★ Selected</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-row"><span class="metric">Nightly Rate</span><span class="val-good">₹13,404</span></div>
+        <div class="compare-row"><span class="metric">23-Night Total</span><span class="val-good">₹3,08,292</span></div>
+        <div class="compare-row"><span class="metric">Stars</span><span class="val-neutral">★★★★ (4-star)</span></div>
+        <div class="compare-row"><span class="metric">Rating</span><span class="val-good">4.4 / 5 (5,102 reviews)</span></div>
+        <div class="compare-row"><span class="metric">Breakfast</span><span class="val-good">Included ✓</span></div>
+        <div class="compare-row"><span class="metric">Wi-Fi</span><span class="val-good">Free ✓</span></div>
+        <div class="compare-row"><span class="metric">Rate Type</span><span class="val-good">Volvo Negotiated ✓</span></div>
+        <div class="compare-row"><span class="metric">Free Cancellation</span><span class="val-good">Until 6 Jun ✓</span></div>
+        <div class="compare-row"><span class="metric">Travel to Office</span><span class="val-neutral">26 min by car</span></div>
+      </div>
+    </div>
+    <div class="compare-card neutral">
+      <div class="compare-header">
+        <div class="hotel-name">Scandic Europa (Mukesh's hotel)</div>
+        <span class="verdict verdict-alt">Alternative</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-row"><span class="metric">Best Rate (w/ breakfast)</span><span class="val-mid">₹13,957 (Queen Bed)</span></div>
+        <div class="compare-row"><span class="metric">23-Night Total</span><span class="val-mid">₹3,21,011</span></div>
+        <div class="compare-row"><span class="metric">Stars</span><span class="val-neutral">★★★★ (4-star)</span></div>
+        <div class="compare-row"><span class="metric">Rating</span><span class="val-neutral">4.3 / 5 (2,530 reviews)</span></div>
+        <div class="compare-row"><span class="metric">Breakfast</span><span class="val-good">Included ✓</span></div>
+        <div class="compare-row"><span class="metric">Wi-Fi</span><span class="val-good">Free ✓</span></div>
+        <div class="compare-row"><span class="metric">Rate Type</span><span class="val-good">Loyalty Points ✓</span></div>
+        <div class="compare-row"><span class="metric">Free Cancellation</span><span class="val-good">Until 6 Jun ✓</span></div>
+        <div class="compare-row"><span class="metric">Travel to Office</span><span class="val-good">16 min by car</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saving callout -->
+  <div style="background:var(--green-light);border:2px solid #86efac;border-radius:12px;padding:16px 24px;margin-bottom:32px;display:flex;align-items:center;gap:16px;">
+    <div style="font-size:32px;">💰</div>
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:4px;">Saving vs Scandic Europa (23 nights)</div>
+      <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--green);letter-spacing:-0.5px;">₹12,719</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px;">₹553 × 23 nights · Volvo Negotiated Rate · Same 4-star standard</div>
+    </div>
+  </div>
+
+  <!-- ════════ HOTEL CARDS ════════ -->
+  <div class="hotels-label">Hotel Options — 6 Jun to 29 Jun 2026</div>
+
+  <!-- ═══ HOTEL 1 — GOTHIA TOWERS ═══ -->
+  <div class="hotel-card recommended-card" id="hotel1" onclick="selectHotel(1)">
+    <div class="ribbon">★ &nbsp;Selected — Volvo Negotiated Rate · Best Value · 4.4/5 Excellent</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="margin-bottom:10px;"><div class="select-radio-hotel" id="radio-h1"></div></div>
+        <div>
+          <div class="hotel-name">Gothia Towers &amp; Upper House</div>
+          <div class="stars">★★★★</div>
+          <div class="hotel-address">📍 Mässans Gata 24, Gothenburg, Västra Götaland County 402 26</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.4</span>
+            <span class="rating-label">Excellent</span>
+            <span class="rating-count">(5,102 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-amber">Free Cancellation to 6-Jun</span>
+            <span class="tag tag-blue">Pay at Hotel</span>
+          </div>
+          <div class="distance-row">
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">🚗 26 min to GOT airport</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">🚌 33 min by public transport</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">🚶 60+ min walking</div>
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main good">₹13,404</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">23 nights (Jun 6–29)</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-top:4px;">₹3,08,292</div>
+          <div class="price-policy" style="color:var(--green);">✓ Within policy (max ₹18,428)</div>
+        </div>
+      </div>
+    </div>
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle1" onclick="toggleRooms(event,1)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms1">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Gothia Towers Premium Room, King Bed, Breakfast, 25 sqm</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span class="room-perk">✓ Armchair &amp; Desk</span>
+              <span class="room-perk">✓ Max 2 guests</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+              <span class="room-perk">✓ Free cancellation to 6 Jun</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹13,404</div>
+            <span class="room-badge badge-chosen">Selected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <details class="screenshot-section">
+      <summary>View booking screenshot</summary>
+      <div class="screenshot-img"><img src="/mnt/user-data/uploads/1772637758950_image.png" alt="Gothia Towers screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'"></div>
+    </details>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/4CSATMDS/property-details?travelers=39652357&company_id=45534&longitude=12.295032&latitude=57.667927&main_traveler=39652357&destination=Gothenburg%20(GOT-Landvetter)&region_id=5525319&search_type=AIRPORT&start_date=2026-06-06&end_date=2026-06-30&itid=null&adults_per_room=1&initial_latitude=57.667927&initial_longitude=12.295032&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1a7a4a;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#15623c'" onmouseout="this.style.background='#1a7a4a'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Gothia Towers on Egencia
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ HOTEL 2 — SCANDIC EUROPA ═══ -->
+  <div class="hotel-card alt-card" id="hotel2" onclick="selectHotel(2)">
+    <div class="ribbon-alt">ℹ &nbsp;Alternative — Where Mukesh Stayed · Higher Flexible Rate</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="margin-bottom:10px;"><div class="select-radio-hotel" id="radio-h2"></div></div>
+        <div>
+          <div class="hotel-name" style="color:var(--purple);">Scandic Europa</div>
+          <div class="stars">★★★★</div>
+          <div class="hotel-address">📍 Nils Ericsonsgatan 21, Gothenburg, Västra Götaland County 411 03</div>
+          <div class="hotel-rating">
+            <span class="rating-score" style="background:#6d28d9;">4.3</span>
+            <span class="rating-label">Excellent</span>
+            <span class="rating-count">(2,530 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-purple">Mukesh's hotel (precedent)</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Loyalty Points (flex rate)</span>
+            <span class="tag tag-amber">⚠ ₹2,104 more/night than Gothia</span>
+          </div>
+          <div class="distance-row">
+            <div style="font-size:12px;color:var(--muted);">🚗 16 min to Volvo Trucks office</div>
+            <div style="font-size:12px;color:var(--muted);">🚌 33 min public transport to airport</div>
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main alt">₹13,957</div>
+          <div class="price-per">per night (Queen Bed + breakfast)</div>
+          <div style="margin-top:2px;font-size:12px;color:var(--muted);">Best with breakfast: Standard Queen Bed, 10% off · No loyalty points</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">23 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--purple);letter-spacing:-0.5px;margin-top:4px;">₹3,21,011</div>
+          <div class="price-policy" style="color:var(--amber);">⚠ ₹12,719 more vs Gothia (₹553/night × 23 nights)</div>
+        </div>
+      </div>
+    </div>
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle2" onclick="toggleRooms(event,2)" style="color:var(--purple);">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms2">
+
+        <!-- FLEX King — most expensive, loyalty points -->
+        <div class="room-row" style="opacity:.75;">
+          <div style="flex:1;">
+            <div class="room-name">FLEX — Incl. Breakfast, Standard 1 King Bed, Free Wi-Fi, Safe, 18 m²</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span class="room-perk">✓ Hotel Loyalty Points</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Most expensive option — loyalty points not needed</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--muted);">₹15,508</div>
+            <span class="room-badge badge-alt">Skip — overpriced</span>
+          </div>
+        </div>
+
+        <!-- Standard Double — 10% off, no breakfast -->
+        <div class="room-row" style="opacity:.75;">
+          <div style="flex:1;">
+            <div class="room-name">Standard Double Room (10% off)</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">"Double" can mean a smaller or less comfortable bed configuration</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--muted);text-decoration:line-through;">₹15,508</div>
+            <div class="room-price" style="color:var(--navy);">₹13,957</div>
+            <span class="room-badge badge-alt">Double bed</span>
+          </div>
+        </div>
+
+        <!-- ★ BEST: Standard Queen — breakfast included, 10% off, best value -->
+        <div class="room-row" style="border:2px solid #a78bfa;background:var(--purple-light);">
+          <div style="flex:1;">
+            <div class="room-name" style="color:var(--purple);">★ Standard Room, 1 Queen Bed (10% off) — Best Value if choosing Scandic</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span class="room-perk">✓ Free Cancellation to 6 Jun</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points (not needed)</span>
+            </div>
+            <div style="font-size:11px;color:var(--purple);margin-top:6px;font-weight:600;">Queen bed = best solo comfort · ₹1,551 cheaper than FLEX King · breakfast included · 1 remaining</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--muted);text-decoration:line-through;">₹15,508</div>
+            <div class="room-price" style="color:var(--purple);">₹13,957</div>
+            <span class="room-badge" style="background:var(--purple-light);color:var(--purple);border:1px solid #a78bfa;">Best if Scandic chosen</span>
+          </div>
+        </div>
+
+        <!-- Standard Twin — 10% off, no breakfast -->
+        <div class="room-row" style="opacity:.75;">
+          <div style="flex:1;">
+            <div class="room-name">Standard Twin Room (10% off)</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Twin = two separate small beds — not ideal for solo business travel</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--muted);text-decoration:line-through;">₹15,508</div>
+            <div class="room-price" style="color:var(--navy);">₹13,957</div>
+            <span class="room-badge badge-alt">Twin beds</span>
+          </div>
+        </div>
+
+        <!-- Cheaper options — no breakfast -->
+        <div class="room-row" style="opacity:.65;">
+          <div style="flex:1;">
+            <div class="room-name">Standard Double / Queen / Twin Room (no breakfast, 10% off)</div>
+            <div class="room-perks">
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Cheaper but no breakfast — not worth it for a 23-night stay</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--muted);text-decoration:line-through;">₹14,027</div>
+            <div class="room-price" style="color:var(--muted);">₹12,625</div>
+            <span class="room-badge badge-alt">No breakfast</span>
+          </div>
+        </div>
+
+        <details class="screenshot-section" style="margin-top:8px;padding:0;">
+          <summary style="padding:10px 0;">View full room list screenshot</summary>
+          <div class="screenshot-img"><img src="/mnt/user-data/uploads/1772639501121_image.png" alt="Scandic Europa rooms" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'"></div>
+        </details>
+      </div>
+    </div>
+    <details class="screenshot-section">
+      <summary>View booking screenshot</summary>
+      <div class="screenshot-img"><img src="/mnt/user-data/uploads/1772639195787_image.png" alt="Scandic Europa screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'"></div>
+    </details>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/3A2X6DAO/property-details?travelers=39652357&company_id=45534&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&start_date=2026-06-06&end_date=2026-06-29&itid=null&adults_per_room=1&initial_latitude=57.712492&initial_longitude=11.9229411&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#6d28d9;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#5b21b6'" onmouseout="this.style.background='#6d28d9'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Scandic Europa on Egencia
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div class="cta-summary">
+      <div class="selected-label">Your selection</div>
+      <div id="cta-info" class="selected-info">Gothia Towers &amp; Upper House — ₹13,404/night · 23 nights (Jun 6–29) · ₹3,08,292</div>
+      <div id="cta-sub" class="cta-sub" style="color:var(--green);">✓ Volvo negotiated rate · Breakfast included · Free cancellation · Graduation week to be booked separately</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <a href="https://www.egencia.co.in/hotels/search?search_page=SEARCH_RESULTS&company_id=45534&source=HOTEL_WEBAPP&source_version=1.0&radius_unit=km&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&check_in_date=2026-06-06&check_out_date=2026-06-29&itid=null&adults_per_room=1&verbosity=1&start=0&count=30&pageNumber=0&isPaginationRequest=false&chain_id=" target="_blank" class="btn-secondary" style="font-size:12px;padding:9px 16px;text-decoration:none;text-align:center;">
+        Jun 6–29 Hotels ↗
+      </a>
+      <a href="https://www.egencia.co.in/hotels/search?search_page=SEARCH_RESULTS&company_id=45534&source=HOTEL_WEBAPP&source_version=1.0&radius_unit=km&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&check_in_date=2026-06-06&check_out_date=2026-07-07&itid=null&adults_per_room=1&verbosity=1&start=0&count=30&pageNumber=0&isPaginationRequest=false&chain_id=" target="_blank" class="btn-secondary" style="font-size:12px;padding:9px 16px;text-decoration:none;text-align:center;">
+        Jun 6–Jul 7 Hotels ↗
+      </a>
+    </div>
+    <a id="book-btn" href="https://www.egencia.co.in/hotels/4CSATMDS/property-details?travelers=39652357&company_id=45534&longitude=12.295032&latitude=57.667927&main_traveler=39652357&destination=Gothenburg%20(GOT-Landvetter)&region_id=5525319&search_type=AIRPORT&start_date=2026-06-06&end_date=2026-06-30&itid=null&adults_per_room=1&initial_latitude=57.667927&initial_longitude=12.295032&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank"
+      style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;white-space:nowrap;transition:background .2s;"
+      onmouseover="this.style.background='#142d5c'" onmouseout="this.style.background='var(--navy)'">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+      Book Gothia Towers
+    </a>
+  </div>
+
+</main>
+
+<script>
+  const hotels = {
+    1: {
+      info: 'Gothia Towers & Upper House — ₹13,404/night · 23 nights (Jun 6–29) · ₹3,08,292',
+      sub: '✓ Volvo negotiated rate · Breakfast included · Free cancellation · Graduation week to be booked separately',
+      subColor: 'var(--green)',
+      link: 'https://www.egencia.co.in/hotels/4CSATMDS/property-details?travelers=39652357&company_id=45534&longitude=12.295032&latitude=57.667927&main_traveler=39652357&destination=Gothenburg%20(GOT-Landvetter)&region_id=5525319&search_type=AIRPORT&start_date=2026-06-06&end_date=2026-06-30&itid=null&adults_per_room=1&initial_latitude=57.667927&initial_longitude=12.295032&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Gothia Towers'
+    },
+    2: {
+      info: 'Scandic Europa — ₹13,957/night (Queen Bed w/ breakfast) · 23 nights · ₹3,21,011',
+      sub: 'ℹ Alternative option — ₹12,719 more expensive than Gothia Towers over 23 nights',
+      subColor: 'var(--purple)',
+      link: 'https://www.egencia.co.in/hotels/3A2X6DAO/property-details?travelers=39652357&company_id=45534&longitude=11.9229411&latitude=57.712492&main_traveler=39652357&destination=Volvo%20Trucks%2C%20Regulusgatan%2C%20Gothenburg%2C%20Sweden&search_type=ADDRESS&start_date=2026-06-06&end_date=2026-06-29&itid=null&adults_per_room=1&initial_latitude=57.712492&initial_longitude=11.9229411&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Scandic Europa'
+    }
+  };
+
+  function selectHotel(n) {
+    document.querySelectorAll('.hotel-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('hotel' + n).classList.add('selected');
+    const h = hotels[n];
+    document.getElementById('cta-info').textContent = h.info;
+    document.getElementById('cta-info').style.color = 'var(--navy)';
+    document.getElementById('cta-sub').textContent = h.sub;
+    document.getElementById('cta-sub').style.color = h.subColor;
+    btn.href = h.link;
+    btn.innerHTML = `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg> ${h.btnText}`;
+    btn.style.background = n === 2 ? 'var(--purple)' : 'var(--navy)';
+  }
+
+  function toggleRooms(e, n) {
+    e.stopPropagation();
+    document.getElementById('rooms' + n).classList.toggle('open');
+    document.getElementById('rtoggle' + n).classList.toggle('open');
+  }
+
+  window.onload = () => selectHotel(1);
+
+
+
+
+
+</script>
+</body>
+</html>

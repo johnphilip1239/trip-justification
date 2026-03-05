@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Travel – Flight GSO → GOT</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --gold: #c9a84c;
+    --cream: #faf8f3;
+    --white: #ffffff;
+    --text: #1a2740;
+    --muted: #6b7a99;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --border: #e4e0d6;
+    --accent: #1e4fa3;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --amber: #b45309;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; font-size:14px; }
+
+  header { background:var(--navy); padding:0 48px; display:flex; align-items:center; justify-content:space-between; height:68px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,.35); }
+  .logo { font-family:'Cormorant Garamond',serif; font-weight:700; color:var(--gold); font-size:24px; letter-spacing:.5px; }
+  .logo span { color:#fff; }
+  .header-meta { font-size:12px; color:rgba(255,255,255,.55); display:flex; gap:24px; align-items:center; }
+  .status-pill { background:rgba(201,168,76,.18); border:1px solid var(--gold); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.5px; }
+
+  main { max-width:980px; margin:0 auto; padding:48px 24px 80px; }
+
+  .steps { display:flex; align-items:center; margin-bottom:44px; }
+  .step { display:flex; align-items:center; gap:10px; font-size:12px; font-weight:500; color:var(--muted); }
+  .step.active { color:var(--accent); font-weight:600; }
+  .step.done { color:var(--green); }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; border:2px solid currentColor; flex-shrink:0; }
+  .step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 12px; }
+  .step-line.done { background:var(--green); }
+
+  .page-nav { display:flex; gap:12px; margin-bottom:28px; }
+  .nav-btn { background:#fff; border:2px solid var(--border); color:var(--navy); padding:10px 20px; border-radius:8px; font-size:12px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color .2s,background .2s; }
+  .nav-btn:hover { border-color:var(--accent); background:#f8faff; }
+
+  .section-heading { display:flex; align-items:baseline; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+  .section-heading h1 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:34px; color:var(--navy); line-height:1.15; }
+  .route-badge { background:var(--navy); color:var(--gold); padding:4px 14px; border-radius:4px; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+  .subtitle { font-size:13px; color:var(--muted); margin-bottom:28px; line-height:1.7; }
+
+  .compare-wrap { background:#fff; border:2px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:32px; }
+  .compare-wrap table { width:100%; border-collapse:collapse; font-size:12px; }
+  .compare-wrap thead tr { background:var(--navy); color:#fff; }
+  .compare-wrap thead th { padding:12px 14px; text-align:left; font-weight:600; font-size:11px; letter-spacing:.8px; text-transform:uppercase; white-space:nowrap; }
+  .compare-wrap tbody tr { border-bottom:1px solid var(--border); transition:background .15s; }
+  .compare-wrap tbody tr:hover { background:#f8faff; }
+  .compare-wrap tbody tr.rec-row { background:#f0fdf4; }
+  .compare-wrap tbody tr.bad-row { background:#fdf8f0; opacity:.88; }
+  .compare-wrap td { padding:11px 14px; vertical-align:middle; }
+  .td-dur-best { font-weight:700; color:var(--green); }
+  .td-dur-bad { color:var(--red); font-weight:600; }
+  .tag-sm { display:inline-flex; align-items:center; padding:2px 9px; border-radius:8px; font-size:10px; font-weight:700; letter-spacing:.3px; }
+  .tag-rec { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .tag-warn { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+  .tag-neutral { background:#f1f5f9; color:var(--muted); border:1px solid #cbd5e1; }
+
+  .just-box { background:linear-gradient(135deg,#0b1e3d 0%,#1e4fa3 100%); border-radius:14px; padding:28px 32px; margin-bottom:32px; }
+  .just-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:22px; color:var(--gold); margin-bottom:16px; }
+  .just-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .just-list li { display:flex; gap:12px; font-size:13px; line-height:1.6; color:rgba(255,255,255,.9); }
+  .just-list li::before { content:'✓'; color:var(--gold); font-weight:700; flex-shrink:0; margin-top:2px; }
+  .just-list li.warn::before { content:'⚠'; color:#fbbf24; }
+
+  .flights-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+
+  .flight-card { background:var(--white); border:2px solid var(--border); border-radius:14px; margin-bottom:16px; overflow:hidden; transition:border-color .25s,box-shadow .25s; cursor:pointer; }
+  .flight-card:hover { border-color:var(--accent); box-shadow:0 6px 28px rgba(30,79,163,.1); }
+  .flight-card.selected { border-color:var(--accent); box-shadow:0 6px 28px rgba(30,79,163,.15); }
+  .flight-card.rec { border-color:#86efac; }
+  .flight-card.rec:hover { border-color:var(--green); }
+  .flight-card.rec.selected { border-color:var(--green); box-shadow:0 6px 28px rgba(26,122,74,.18); }
+  .flight-card.disc { border-color:#f5b7b1; }
+
+  .ribbon-green { background:var(--green); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+  .ribbon-red { background:var(--red); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+
+  .card-header { padding:18px 22px 14px; display:flex; align-items:center; gap:14px; }
+  .select-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:border-color .2s; }
+  .flight-card.selected .select-radio { border-color:var(--accent); background:var(--accent); }
+  .flight-card.rec.selected .select-radio { border-color:var(--green); background:var(--green); }
+  .select-radio::after { content:''; width:8px; height:8px; border-radius:50%; background:#fff; opacity:0; transition:opacity .2s; }
+  .flight-card.selected .select-radio::after { opacity:1; }
+
+  .airline-chip { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; letter-spacing:.5px; }
+  .chip-vs { background:#fff0f0; color:#c0392b; }
+  .chip-dl { background:#f0f4ff; color:#1e4fa3; }
+
+  .flight-main { flex:1; display:flex; align-items:center; gap:16px; }
+  .time-block { text-align:center; }
+  .time-block .time { font-family:'Cormorant Garamond',serif; font-weight:600; font-size:26px; color:var(--navy); letter-spacing:-.3px; line-height:1; }
+  .time-block .ampm { font-family:'Sora',sans-serif; font-size:12px; font-weight:400; }
+  .time-block .airport { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:1.2px; text-transform:uppercase; margin-top:2px; }
+
+  .flight-route { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .dur-chip { font-size:11px; font-weight:700; padding:3px 12px; border-radius:10px; font-family:'Sora',sans-serif; }
+  .dur-best { background:#f0fdf4; color:var(--green); border:1px solid #86efac; }
+  .dur-mid { background:#f8faff; color:var(--accent); border:1px solid #bfdbfe; }
+  .dur-bad { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+  .route-line { display:flex; align-items:center; width:100%; gap:6px; }
+  .line { flex:1; height:1.5px; background:#d0d8e8; }
+  .stops-badge { font-size:10px; font-weight:700; color:var(--accent); background:#f0f4ff; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+  .via-text { font-size:10px; color:var(--muted); }
+
+  .price-block { text-align:right; }
+  .price-block .price { font-family:'Cormorant Garamond',serif; font-weight:600; font-size:28px; color:var(--navy); line-height:1; letter-spacing:.02em; }
+  .price-block .price.warn { color:var(--red); }
+  .price-block .per { font-size:10px; color:var(--muted); margin-top:2px; font-family:'Sora',sans-serif; }
+
+  .card-badges { display:flex; gap:7px; padding:0 22px 10px 70px; flex-wrap:wrap; }
+  .badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:8px; letter-spacing:.2px; font-family:'Sora',sans-serif; }
+  .b-green { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .b-blue { background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd; }
+  .b-amber { background:#fef9c3; color:var(--amber); border:1px solid #fde047; }
+  .b-red { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+
+  .airport-warn { margin:0 22px 12px 70px; background:var(--red-light); border:1px solid #f5b7b1; border-radius:8px; padding:10px 14px; font-size:12px; color:var(--red); font-weight:500; display:flex; gap:10px; align-items:flex-start; }
+
+  .details-toggle { padding:10px 22px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--accent); font-weight:600; cursor:pointer; user-select:none; transition:background .15s; }
+  .details-toggle:hover { background:#f8faff; }
+  .chevron { transition:transform .3s; display:flex; align-items:center; }
+  .details-toggle.open .chevron { transform:rotate(180deg); }
+  .details-body { display:none; padding:20px 22px; border-top:1px solid var(--border); background:#f8faff; }
+  .details-body.open { display:block; }
+
+  .leg { display:flex; gap:14px; margin-bottom:18px; position:relative; }
+  .leg::before { content:''; position:absolute; left:15px; top:24px; bottom:-18px; width:1px; background:#c8d3e8; }
+  .leg:last-child::before { display:none; }
+  .leg-dot { width:30px; height:30px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; flex-shrink:0; z-index:1; }
+  .leg-info { flex:1; }
+  .leg-airports { font-size:14px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+  .leg-time { font-size:12px; color:var(--muted); margin-bottom:5px; }
+  .leg-meta { font-size:11px; color:#8898b8; display:flex; gap:7px; flex-wrap:wrap; }
+  .leg-meta span { background:#fff; border:1px solid var(--border); padding:2px 8px; border-radius:6px; }
+  .layover-row { display:flex; align-items:center; gap:8px; margin:-6px 0 18px 44px; font-size:11px; color:#e07b00; font-weight:600; }
+  .layover-row::before { content:'⏱'; font-size:13px; }
+  .layover-row.airport-change { color:var(--red); font-weight:700; }
+  .layover-row.airport-change::before { content:'⚠'; }
+
+  .ss-section { padding:12px 22px; border-top:1px dashed var(--border); }
+  .ss-section summary { font-size:11px; color:var(--muted); cursor:pointer; font-weight:500; list-style:none; display:flex; align-items:center; gap:6px; }
+  .ss-section summary::-webkit-details-marker { display:none; }
+  .ss-section summary::before { content:'📸'; }
+  .ss-img { margin-top:10px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+  .ss-img img { width:100%; display:block; }
+
+  .cta-area { margin-top:36px; display:flex; align-items:center; justify-content:space-between; gap:16px; background:var(--white); border:2px solid var(--border); border-radius:14px; padding:22px 28px; }
+  .cta-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:4px; }
+  .cta-info { font-size:14px; font-weight:600; color:var(--navy); }
+  .cta-price { font-family:'Cormorant Garamond',serif; font-weight:600; font-size:26px; color:var(--navy); margin-top:2px; letter-spacing:.02em; }
+  .no-sel { font-size:13px; color:var(--muted); font-style:italic; }
+  .btn-secondary { background:transparent; color:var(--navy); border:2px solid var(--navy); padding:13px 22px; border-radius:10px; font-size:13px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; transition:background .2s; white-space:nowrap; }
+  .btn-secondary:hover { background:#f0f4fb; }
+
+  @media(max-width:640px) {
+    header { padding:0 20px; }
+    main { padding:28px 16px 60px; }
+    .flight-main { flex-wrap:wrap; gap:12px; }
+    .cta-area { flex-direction:column; align-items:stretch; },.btn-secondary { width:100%; justify-content:center; }
+    .compare-wrap { overflow-x:auto; }
+  }
+
+  a.step {
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none; color:inherit;
+    font-size:13px; font-weight:500; color:var(--muted);
+    transition: opacity .2s;
+    cursor: pointer;
+  }
+  a.step:hover { opacity: .75; }
+  a.step.done { color:var(--green); }
+  a.step.active { color:var(--accent); font-weight:600; }
+  a.step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  a.step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+
+  .step-num { transition: transform .2s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Travel<span>Desk</span></div>
+  <div class="header-meta">
+    <span>Business Trip – June 2026</span>
+    <span class="status-pill">✓ Within Policy</span>
+  </div>
+</header>
+
+<main>
+    <div class="steps">
+    <a href="flight-blr-to-gso.html" class="step done"><div class="step-num">✓</div><span>BLR → GSO Flight</span></a>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-num">2</div><span>GSO → GOT Flight</span></div>
+    <div class="step-line"></div>
+    <a href="hotel-gso.html" class="step"><div class="step-num">3</div><span>GSO Hotel</span></a>
+    <div class="step-line"></div>
+    <a href="hotel-gothenburg.html" class="step"><div class="step-num">4</div><span>GOT Hotel</span></a>
+  </div>
+  <div class="page-nav"><a href="index.html" class="nav-btn">⌂ Home</a>
+    <a href="flight-blr-to-gso.html" class="nav-btn">← Back: BLR → GSO</a>
+  </div>
+
+  <div class="section-heading">
+    <h1>Flight Selection</h1>
+    <span class="route-badge">GSO → GOT</span>
+  </div>
+  <p class="subtitle">Saturday, 6 June 2026 &nbsp;·&nbsp; Economy / Coach &nbsp;·&nbsp; One-way &nbsp;·&nbsp; 5 policy-compliant options. Flight 1 is recommended — shortest journey, no airport transfers.</p>
+
+  <div class="compare-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Departs</th><th>Arrives</th><th>Total Duration</th><th>Route</th><th>Price</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rec-row">
+          <td><strong>1 ★</strong></td><td>11:05 am</td><td>9:15 am +1</td>
+          <td><span class="td-dur-best">16h 10min</span></td>
+          <td>via DTW · AMS</td><td>₹52,040</td>
+          <td><span class="tag-sm tag-rec">★ Recommended</span></td>
+        </tr>
+        <tr>
+          <td>2</td><td>11:05 am</td><td>1:45 pm +1</td><td>20h 40min</td><td>via DTW · AMS</td><td>₹52,040</td>
+          <td><span class="tag-sm tag-neutral">Acceptable</span></td>
+        </tr>
+        <tr>
+          <td>3</td><td>11:05 am</td><td>1:45 pm +1</td><td>20h 40min</td><td>via DTW · AMS</td><td>₹52,040</td>
+          <td><span class="tag-sm tag-neutral">Acceptable</span></td>
+        </tr>
+        <tr class="bad-row">
+          <td>4</td><td>2:00 pm</td><td>1:45 pm +1</td>
+          <td><span class="td-dur-bad">17h 45min</span></td>
+          <td>LGA → JFK · AMS</td><td>₹52,398</td>
+          <td><span class="tag-sm tag-warn">⚠ Airport Change</span></td>
+        </tr>
+        <tr class="bad-row">
+          <td>5</td><td>7:20 am</td><td>9:15 am +1</td>
+          <td><span class="td-dur-bad">19h 55min</span></td>
+          <td>LGA → JFK · AMS</td><td>₹52,398</td>
+          <td><span class="tag-sm tag-warn">⚠ Airport Change</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="just-box">
+    <div class="just-title">Why Flight 1 is the right choice</div>
+    <ul class="just-list">
+      <li><strong>Shortest total travel time at 16h 10min</strong> — 4h 30min faster than Flights 2 &amp; 3, and nearly 4 hours faster than Flight 5. Arriving well-rested matters for a technical engagement.</li>
+      <li><strong>Same price as Flights 2 &amp; 3 (₹52,040)</strong> — no premium paid for the most efficient option. Flights 4 &amp; 5 actually cost more at ₹52,398.</li>
+      <li><strong>Single-airport connections throughout</strong> — GSO → DTW → AMS → GOT with no ground transfers at any point.</li>
+      <li class="warn"><strong>Flights 4 &amp; 5 require a mandatory LGA → JFK airport transfer in New York</strong> — arriving at LaGuardia and departing from JFK requires ground transit, adds risk of missed connection, and costs ₹358 more.</li>
+      <li class="warn"><strong>Flights 2 &amp; 3 have the same departure but significantly longer layovers</strong> — up to 5h 27min in DTW and 6h 15min in AMS versus 3h 32min and 1h 45min for Flight 1.</li>
+    </ul>
+  </div>
+
+  <div class="flights-label">All 5 Policy-Compliant Options</div>
+
+  <!-- FLIGHT 1 -->
+  <div class="flight-card rec" id="card1" onclick="selectFlight(1)">
+    <div class="ribbon-green">★ &nbsp;Recommended — Shortest Journey · 16h 10min · No Airport Transfers</div>
+    <div class="card-header">
+      <div class="select-radio" id="radio1"></div>
+      <div class="airline-chip chip-vs">VS</div>
+      <div class="flight-main">
+        <div class="time-block">
+          <div class="time">11:05<span class="ampm">am</span></div>
+          <div class="airport">GSO</div>
+        </div>
+        <div class="flight-route">
+          <div class="dur-chip dur-best">16h 10min ✓ Fastest</div>
+          <div class="route-line"><div class="line"></div><div class="stops-badge">2 stops</div><div class="line"></div></div>
+          <div class="via-text">via DTW · AMS</div>
+        </div>
+        <div class="time-block">
+          <div class="time">9:15<span class="ampm">am</span> <span style="font-size:10px;color:var(--muted)">+1</span></div>
+          <div class="airport">GOT</div>
+        </div>
+      </div>
+      <div class="price-block">
+        <div class="price">₹52,040</div>
+        <div class="per">one-way</div>
+      </div>
+    </div>
+    <div class="card-badges">
+      <span class="badge b-green">★ Recommended</span>
+      <span class="badge b-blue">Virgin Atlantic + KLM</span>
+      <span class="badge b-amber">Sat dep · Sun arr</span>
+    </div>
+    <div class="details-toggle" id="toggle1" onclick="toggleDetails(event,1)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="details-body" id="details1">
+      <div class="leg">
+        <div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Greensboro (GSO) → Detroit (DTW)</div>
+          <div class="leg-time">11:05 am → 12:48 pm · 1h 43min</div>
+          <div class="leg-meta"><span>VS 4193</span><span>Canadair RJ 900</span><span>Economy (T)</span></div>
+        </div>
+      </div>
+      <div class="layover-row">3h 32min layover in Detroit (DTW)</div>
+      <div class="leg">
+        <div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Detroit (DTW) → Amsterdam (AMS)</div>
+          <div class="leg-time">4:20 pm → 6:00 am +1 · 7h 40min</div>
+          <div class="leg-meta"><span>VS 3929 (operated by Delta)</span><span>Airbus A350-900</span><span>Economy (T)</span></div>
+        </div>
+      </div>
+      <div class="layover-row">1h 45min layover in Amsterdam (AMS)</div>
+      <div class="leg">
+        <div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Amsterdam (AMS) → Gothenburg (GOT)</div>
+          <div class="leg-time">7:45 am → 9:15 am · 1h 30min</div>
+          <div class="leg-meta"><span>KLM 1229</span><span>Embraer 175</span><span>Economy (V)</span></div>
+        </div>
+      </div>
+      <details class="ss-section"><summary>View booking screenshot</summary><div class="ss-img"><img src="/mnt/user-data/uploads/1772636548245_image.png" alt="F1" onerror="this.parentElement.innerHTML='<div style=padding:12px>Preview not available.</div>'"></div></details>
+    </div>
+  </div>
+
+  <!-- FLIGHT 2 -->
+  <div class="flight-card" id="card2" onclick="selectFlight(2)">
+    <div class="card-header">
+      <div class="select-radio" id="radio2"></div>
+      <div class="airline-chip chip-vs">VS</div>
+      <div class="flight-main">
+        <div class="time-block"><div class="time">11:05<span class="ampm">am</span></div><div class="airport">GSO</div></div>
+        <div class="flight-route">
+          <div class="dur-chip dur-mid">20h 40min</div>
+          <div class="route-line"><div class="line"></div><div class="stops-badge">2 stops</div><div class="line"></div></div>
+          <div class="via-text">via DTW · AMS</div>
+        </div>
+        <div class="time-block"><div class="time">1:45<span class="ampm">pm</span> <span style="font-size:10px;color:var(--muted)">+1</span></div><div class="airport">GOT</div></div>
+      </div>
+      <div class="price-block"><div class="price">₹52,040</div><div class="per">one-way</div></div>
+    </div>
+    <div class="card-badges">
+      <span class="badge b-amber">+4h 30min vs Flight 1</span>
+      <span class="badge b-blue">Virgin Atlantic + KLM</span>
+    </div>
+    <div class="details-toggle" id="toggle2" onclick="toggleDetails(event,2)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="details-body" id="details2">
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Greensboro (GSO) → Detroit (DTW)</div><div class="leg-time">11:05 am → 12:48 pm · 1h 43min</div><div class="leg-meta"><span>VS 4193</span><span>Canadair RJ 900</span><span>Economy (T)</span></div></div>
+      </div>
+      <div class="layover-row">5h 27min layover in Detroit (DTW) — longer than Flight 1</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Detroit (DTW) → Amsterdam (AMS)</div><div class="leg-time">6:15 pm → 8:15 am +1 · 8h 0min</div><div class="leg-meta"><span>VS 3930 (operated by Delta)</span><span>Airbus A330-300</span><span>Economy (T)</span></div></div>
+      </div>
+      <div class="layover-row">4h 0min layover in Amsterdam (AMS)</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Amsterdam (AMS) → Gothenburg (GOT)</div><div class="leg-time">12:15 pm → 1:45 pm · 1h 30min</div><div class="leg-meta"><span>KLM 1233</span><span>Embraer 295</span><span>Economy (V)</span></div></div>
+      </div>
+      <details class="ss-section"><summary>View booking screenshot</summary><div class="ss-img"><img src="/mnt/user-data/uploads/1772636555867_image.png" alt="F2" onerror="this.parentElement.innerHTML='<div style=padding:12px>Preview not available.</div>'"></div></details>
+    </div>
+  </div>
+
+  <!-- FLIGHT 3 -->
+  <div class="flight-card" id="card3" onclick="selectFlight(3)">
+    <div class="card-header">
+      <div class="select-radio" id="radio3"></div>
+      <div class="airline-chip chip-vs">VS</div>
+      <div class="flight-main">
+        <div class="time-block"><div class="time">11:05<span class="ampm">am</span></div><div class="airport">GSO</div></div>
+        <div class="flight-route">
+          <div class="dur-chip dur-mid">20h 40min</div>
+          <div class="route-line"><div class="line"></div><div class="stops-badge">2 stops</div><div class="line"></div></div>
+          <div class="via-text">via DTW · AMS</div>
+        </div>
+        <div class="time-block"><div class="time">1:45<span class="ampm">pm</span> <span style="font-size:10px;color:var(--muted)">+1</span></div><div class="airport">GOT</div></div>
+      </div>
+      <div class="price-block"><div class="price">₹52,040</div><div class="per">one-way</div></div>
+    </div>
+    <div class="card-badges">
+      <span class="badge b-amber">+4h 30min vs Flight 1</span>
+      <span class="badge b-amber">6h 15min AMS layover</span>
+      <span class="badge b-blue">Virgin Atlantic + KLM</span>
+    </div>
+    <div class="details-toggle" id="toggle3" onclick="toggleDetails(event,3)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="details-body" id="details3">
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Greensboro (GSO) → Detroit (DTW)</div><div class="leg-time">11:05 am → 12:48 pm · 1h 43min</div><div class="leg-meta"><span>VS 4193</span><span>Canadair RJ 900</span><span>Economy (T)</span></div></div>
+      </div>
+      <div class="layover-row">3h 32min layover in Detroit (DTW)</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Detroit (DTW) → Amsterdam (AMS)</div><div class="leg-time">4:20 pm → 6:00 am +1 · 7h 40min</div><div class="leg-meta"><span>VS 3929 (operated by Delta)</span><span>Airbus A350-900</span><span>Economy (T)</span></div></div>
+      </div>
+      <div class="layover-row">6h 15min layover in Amsterdam (AMS) — longest of all options</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Amsterdam (AMS) → Gothenburg (GOT)</div><div class="leg-time">12:15 pm → 1:45 pm · 1h 30min</div><div class="leg-meta"><span>KLM 1233</span><span>Embraer 295</span><span>Economy (V)</span></div></div>
+      </div>
+      <details class="ss-section"><summary>View booking screenshot</summary><div class="ss-img"><img src="/mnt/user-data/uploads/1772636563665_image.png" alt="F3" onerror="this.parentElement.innerHTML='<div style=padding:12px>Preview not available.</div>'"></div></details>
+    </div>
+  </div>
+
+  <!-- FLIGHT 4 -->
+  <div class="flight-card disc" id="card4" onclick="selectFlight(4)">
+    <div class="ribbon-red">⚠ &nbsp;Not Recommended — LGA → JFK Airport Transfer · Higher Price</div>
+    <div class="card-header">
+      <div class="select-radio" id="radio4"></div>
+      <div class="airline-chip chip-dl">DL</div>
+      <div class="flight-main">
+        <div class="time-block"><div class="time">2:00<span class="ampm">pm</span></div><div class="airport">GSO</div></div>
+        <div class="flight-route">
+          <div class="dur-chip dur-bad">17h 45min ⚠</div>
+          <div class="route-line"><div class="line"></div><div class="stops-badge">2 stops</div><div class="line"></div></div>
+          <div class="via-text" style="color:var(--red);font-weight:600;">LGA → JFK transfer</div>
+        </div>
+        <div class="time-block"><div class="time">1:45<span class="ampm">pm</span> <span style="font-size:10px;color:var(--muted)">+1</span></div><div class="airport">GOT</div></div>
+      </div>
+      <div class="price-block"><div class="price warn">₹52,398</div><div class="per">+₹358 vs Flight 1</div></div>
+    </div>
+    <div class="card-badges">
+      <span class="badge b-red">⚠ Airport Transfer LGA→JFK</span>
+      <span class="badge b-red">+₹358 more expensive</span>
+      <span class="badge b-blue">Delta + KLM</span>
+    </div>
+    <div class="airport-warn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+      Arrives at LaGuardia (LGA), departs from JFK — physically different airports. Requires ground transit during the 5h 27min New York layover, adding logistical risk and extra cost.
+    </div>
+    <div class="details-toggle" id="toggle4" onclick="toggleDetails(event,4)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="details-body" id="details4">
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Greensboro (GSO) → New York LaGuardia (LGA)</div><div class="leg-time">2:00 pm → 3:43 pm · 1h 43min</div><div class="leg-meta"><span>DL 5043</span><span>Canadair RJ 900</span><span>Economy (E)</span></div></div>
+      </div>
+      <div class="layover-row airport-change">5h 27min — MUST TRANSFER from LGA to JFK (different airports)</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--red)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports" style="color:var(--red)">New York JFK → Amsterdam (AMS)</div><div class="leg-time">9:10 pm → 10:35 am +1 · 7h 25min</div><div class="leg-meta"><span>DL 9403 (KLM)</span><span>Boeing 787-10</span><span>Economy (E)</span></div></div>
+      </div>
+      <div class="layover-row">1h 40min layover in Amsterdam (AMS)</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Amsterdam (AMS) → Gothenburg (GOT)</div><div class="leg-time">12:15 pm → 1:45 pm · 1h 30min</div><div class="leg-meta"><span>DL 9333</span><span>Embraer 295</span><span>Economy (E)</span></div></div>
+      </div>
+      <details class="ss-section"><summary>View booking screenshot</summary><div class="ss-img"><img src="/mnt/user-data/uploads/1772636572079_image.png" alt="F4" onerror="this.parentElement.innerHTML='<div style=padding:12px>Preview not available.</div>'"></div></details>
+    </div>
+  </div>
+
+  <!-- FLIGHT 5 -->
+  <div class="flight-card disc" id="card5" onclick="selectFlight(5)">
+    <div class="ribbon-red">⚠ &nbsp;Not Recommended — LGA → JFK Transfer + 19h 55min Total Duration</div>
+    <div class="card-header">
+      <div class="select-radio" id="radio5"></div>
+      <div class="airline-chip chip-dl">DL</div>
+      <div class="flight-main">
+        <div class="time-block"><div class="time">7:20<span class="ampm">am</span></div><div class="airport">GSO</div></div>
+        <div class="flight-route">
+          <div class="dur-chip dur-bad">19h 55min ⚠</div>
+          <div class="route-line"><div class="line"></div><div class="stops-badge">2 stops</div><div class="line"></div></div>
+          <div class="via-text" style="color:var(--red);font-weight:600;">LGA → JFK transfer</div>
+        </div>
+        <div class="time-block"><div class="time">9:15<span class="ampm">am</span> <span style="font-size:10px;color:var(--muted)">+1</span></div><div class="airport">GOT</div></div>
+      </div>
+      <div class="price-block"><div class="price warn">₹52,398</div><div class="per">+₹358 vs Flight 1</div></div>
+    </div>
+    <div class="card-badges">
+      <span class="badge b-red">⚠ Airport Transfer LGA→JFK</span>
+      <span class="badge b-red">+₹358 more expensive</span>
+      <span class="badge b-blue">Delta + KLM</span>
+    </div>
+    <div class="airport-warn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+      Arrives at LaGuardia (LGA), departs from JFK — requires ground transit during the 7h 41min New York layover. Also 3h 45min longer than Flight 1 and costs more.
+    </div>
+    <div class="details-toggle" id="toggle5" onclick="toggleDetails(event,5)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="details-body" id="details5">
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Greensboro (GSO) → New York LaGuardia (LGA)</div><div class="leg-time">7:20 am → 8:59 am · 1h 39min</div><div class="leg-meta"><span>DL 5292</span><span>Canadair RJ 900</span><span>Economy (E)</span></div></div>
+      </div>
+      <div class="layover-row airport-change">7h 41min — MUST TRANSFER from LGA to JFK (different airports)</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--red)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports" style="color:var(--red)">New York JFK → Amsterdam (AMS)</div><div class="leg-time">4:40 pm → 6:00 am +1 · 7h 20min</div><div class="leg-meta"><span>DL 9357 (KLM)</span><span>Boeing 787-10</span><span>Economy (E)</span></div></div>
+      </div>
+      <div class="layover-row">1h 45min layover in Amsterdam (AMS)</div>
+      <div class="leg"><div class="leg-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info"><div class="leg-airports">Amsterdam (AMS) → Gothenburg (GOT)</div><div class="leg-time">7:45 am → 9:15 am · 1h 30min</div><div class="leg-meta"><span>DL 9240</span><span>Embraer 175</span><span>Economy (E)</span></div></div>
+      </div>
+      <details class="ss-section"><summary>View booking screenshot</summary><div class="ss-img"><img src="/mnt/user-data/uploads/1772636582502_image.png" alt="F5" onerror="this.parentElement.innerHTML='<div style=padding:12px>Preview not available.</div>'"></div></details>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div style="flex:1;">
+      <div class="cta-label">Your selection</div>
+      <div id="cta-info" class="no-sel">No flight selected — click a card above</div>
+      <div id="cta-price" class="cta-price" style="display:none;"></div>
+    </div>
+    
+  </div>
+</main>
+
+<script>
+  const flights = {
+    1:{label:'Flight 1 ★ — VS 4193/3929/KLM 1229 · 11:05 am → 9:15 am (+1) · 16h 10min',price:'₹52,040',warn:false},
+    2:{label:'Flight 2 — VS 4193/3930/KLM 1233 · 11:05 am → 1:45 pm (+1) · 20h 40min',price:'₹52,040',warn:false},
+    3:{label:'Flight 3 — VS 4193/3929/KLM 1233 · 11:05 am → 1:45 pm (+1) · 20h 40min',price:'₹52,040',warn:false},
+    4:{label:'Flight 4 ⚠ — DL 5043/9403/9333 · 2:00 pm → 1:45 pm (+1) · LGA→JFK transfer',price:'₹52,398',warn:true},
+    5:{label:'Flight 5 ⚠ — DL 5292/9357/9240 · 7:20 am → 9:15 am (+1) · LGA→JFK transfer',price:'₹52,398',warn:true}
+  };
+  function selectFlight(n){
+    document.querySelectorAll('.flight-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('card'+n).classList.add('selected');
+    const f=flights[n];
+    const info=document.getElementById('cta-info');
+    const price=document.getElementById('cta-price');
+    info.textContent=f.label; info.className='cta-info'; info.style.color=f.warn?'var(--red)':'var(--navy)';
+    price.textContent=f.price; price.style.display='block'; price.style.color=f.warn?'var(--red)':'var(--navy)';
+    btn.style.opacity='1'; btn.style.pointerEvents='auto'; btn.style.background=f.warn?'var(--red)':'var(--navy)';
+  }
+  function toggleDetails(e,n){
+    e.stopPropagation();
+    document.getElementById('details'+n).classList.toggle('open');
+    document.getElementById('toggle'+n).classList.toggle('open');
+  }
+  window.onload=()=>selectFlight(1);
+
+
+
+
+
+</script>
+</body>
+</html>

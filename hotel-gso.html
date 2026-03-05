@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Travel – Hotel GSO</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --gold: #c9a84c;
+    --cream: #faf8f3;
+    --card-bg: #ffffff;
+    --text: #1a2740;
+    --muted: #6b7a99;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --border: #e4e0d6;
+    --accent: #1e4fa3;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --amber: #b45309;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
+
+  header {
+    background:var(--navy); padding:0 48px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:68px; position:sticky; top:0; z-index:100;
+    box-shadow:0 2px 20px rgba(0,0,0,.35);
+  }
+  .logo { font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:22px; letter-spacing:.5px; }
+  .logo span { color:#fff; }
+  .header-meta { font-size:13px; color:rgba(255,255,255,.55); display:flex; gap:24px; align-items:center; }
+  .status-pill { background:rgba(201,168,76,.18); border:1px solid var(--gold); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:.4px; }
+
+  main { max-width:980px; margin:0 auto; padding:48px 24px 80px; }
+
+  .steps { display:flex; align-items:center; margin-bottom:44px; }
+  .step { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; color:var(--muted); }
+  .step.active { color:var(--accent); }
+  .step.done { color:var(--green); }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; border:2px solid currentColor; flex-shrink:0; }
+  .step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 12px; }
+  .step-line.done { background:var(--green); }
+
+  .page-nav { display:flex; gap:12px; margin-bottom:28px; }
+  .nav-btn { background:#fff; border:2px solid var(--border); color:var(--navy); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color .2s,background .2s; }
+  .nav-btn:hover { border-color:var(--accent); background:#f8faff; }
+
+  .section-heading { display:flex; align-items:baseline; gap:14px; margin-bottom:10px; }
+  .section-heading h1 { font-family:'Cormorant Garamond',serif; font-size:30px; color:var(--navy); }
+  .route-badge { background:var(--navy); color:var(--gold); padding:4px 14px; border-radius:4px; font-size:13px; font-weight:600; letter-spacing:1px; }
+  .subtitle { font-size:14px; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+
+  /* ── Stay summary bar ── */
+  .stay-bar {
+    background:#fff; border:2px solid var(--border); border-radius:12px;
+    padding:16px 24px; margin-bottom:28px;
+    display:flex; gap:32px; align-items:center; flex-wrap:wrap;
+  }
+  .stay-item { display:flex; flex-direction:column; gap:2px; }
+  .stay-item .label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+  .stay-item .value { font-size:15px; font-weight:600; color:var(--navy); }
+  .stay-divider { width:1px; height:36px; background:var(--border); }
+  .policy-badge { margin-left:auto; background:var(--green-light); border:1px solid #86efac; color:var(--green); padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; }
+
+  /* ── Justification box ── */
+  .justification-box {
+    background:linear-gradient(135deg,#0f2a4a 0%,#1e4fa3 100%);
+    border-radius:14px; padding:28px 32px; margin-bottom:32px; color:#fff;
+  }
+  .just-title { font-family:'Cormorant Garamond',serif; font-size:20px; margin-bottom:16px; color:var(--gold); }
+  .just-points { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .just-points li { display:flex; gap:12px; font-size:14px; line-height:1.55; color:rgba(255,255,255,.9); }
+  .just-points li::before { content:'✓'; color:var(--gold); font-weight:700; flex-shrink:0; margin-top:1px; }
+  .just-points li.warn::before { content:'✗'; color:#f87171; }
+
+  /* ── Quick compare ── */
+  .compare-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:32px;
+  }
+  .compare-card {
+    background:#fff; border:2px solid var(--border); border-radius:12px; overflow:hidden;
+  }
+  .compare-card.winner { border-color:#86efac; }
+  .compare-card.loser { border-color:#f5b7b1; opacity:.9; }
+  .compare-header { padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .compare-header .hotel-name { font-weight:700; font-size:14px; color:var(--navy); }
+  .compare-header .verdict { font-size:11px; font-weight:700; padding:3px 10px; border-radius:10px; }
+  .verdict-win { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .verdict-lose { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+  .compare-body { padding:14px 18px; }
+  .compare-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+  .compare-row:last-child { border-bottom:none; }
+  .compare-row .metric { color:var(--muted); font-weight:500; }
+  .compare-row .val-good { color:var(--green); font-weight:700; }
+  .compare-row .val-bad { color:var(--red); font-weight:700; }
+  .compare-row .val-neutral { color:var(--navy); font-weight:600; }
+
+  /* ── Hotel cards ── */
+  .hotels-label { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+
+  .hotel-card {
+    background:var(--card-bg); border:2px solid var(--border);
+    border-radius:14px; margin-bottom:20px; overflow:hidden;
+    transition:border-color .25s, box-shadow .25s; cursor:pointer;
+  }
+  .hotel-card.selected { border-color:var(--accent); box-shadow:0 6px 28px rgba(30,79,163,.15); }
+  .hotel-card.recommended-card { border-color:#86efac; }
+  .hotel-card.recommended-card:hover { border-color:var(--green); }
+  .hotel-card.recommended-card.selected { border-color:var(--green); box-shadow:0 6px 28px rgba(26,122,74,.2); }
+  .hotel-card.discouraged { border-color:#f5b7b1; }
+
+  .ribbon { background:var(--green); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+  .ribbon-warn { background:var(--red); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+
+  .hotel-body { padding:24px; display:flex; gap:20px; }
+  .hotel-img {
+    width:180px; height:130px; border-radius:10px; overflow:hidden;
+    background:#e0e8f0; flex-shrink:0; position:relative;
+  }
+  .hotel-img img { width:100%; height:100%; object-fit:cover; }
+  .hotel-img .img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:32px; background:linear-gradient(135deg,#e8f0fe,#dbeafe); }
+
+  .hotel-info { flex:1; }
+  .hotel-name-row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:4px; }
+  .hotel-name { font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--navy); line-height:1.2; }
+  .stars { color:var(--gold); font-size:13px; letter-spacing:1px; }
+  .hotel-address { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .hotel-rating { display:inline-flex; align-items:center; gap:6px; margin-bottom:12px; }
+  .rating-score { background:var(--navy); color:#fff; font-size:13px; font-weight:700; padding:3px 8px; border-radius:6px; }
+  .rating-label { font-size:13px; font-weight:600; color:var(--navy); }
+  .rating-count { font-size:12px; color:var(--muted); }
+
+  .hotel-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .tag { font-size:11px; font-weight:600; padding:3px 10px; border-radius:10px; }
+  .tag-green { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .tag-blue { background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd; }
+  .tag-amber { background:#fef9c3; color:var(--amber); border:1px solid #fde047; }
+  .tag-red { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+
+  .distance-row { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .distance-item { display:flex; align-items:center; gap:5px; }
+
+  .price-panel {
+    display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+    padding:20px; border-left:1px solid var(--border); min-width:160px;
+  }
+  .price-main { font-family:\'DM Sans\',sans-serif; font-size:28px; font-weight:800; color:var(--navy); }
+  .price-main.good { color:var(--green); }
+  .price-main.bad { color:var(--red); }
+  .price-per { font-size:11px; color:var(--muted); }
+  .price-policy { font-size:11px; color:var(--green); font-weight:600; }
+  .price-policy.over { color:var(--amber); }
+
+  .select-radio-hotel {
+    width:20px; height:20px; border-radius:50%; border:2px solid var(--border);
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:border-color .2s; margin-top:4px;
+  }
+  .hotel-card.selected .select-radio-hotel { border-color:var(--accent); background:var(--accent); }
+  .hotel-card.recommended-card.selected .select-radio-hotel { border-color:var(--green); background:var(--green); }
+  .select-radio-hotel::after { content:''; width:8px; height:8px; border-radius:50%; background:#fff; opacity:0; transition:opacity .2s; }
+  .hotel-card.selected .select-radio-hotel::after { opacity:1; }
+
+  /* Room options */
+  .rooms-section { border-top:1px solid var(--border); }
+  .rooms-toggle { padding:10px 24px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--accent); font-weight:500; cursor:pointer; user-select:none; transition:background .15s; }
+  .rooms-toggle:hover { background:#f8faff; }
+  .chevron { transition:transform .3s; display:flex; align-items:center; }
+  .rooms-toggle.open .chevron { transform:rotate(180deg); }
+  .rooms-body { display:none; padding:16px 24px; background:#f8faff; border-top:1px solid var(--border); }
+  .rooms-body.open { display:block; }
+
+  .room-row {
+    background:#fff; border:1px solid var(--border); border-radius:10px;
+    padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; gap:16px;
+    font-size:13px;
+  }
+  .room-row:last-child { margin-bottom:0; }
+  .room-row .room-name { flex:1; font-weight:600; color:var(--navy); line-height:1.4; }
+  .room-row .room-perks { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .room-perk { font-size:11px; color:var(--green); font-weight:500; }
+  .room-price { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; white-space:nowrap; }
+  .room-badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; white-space:nowrap; }
+  .badge-chosen { background:#dcfce7; color:var(--green); border:1px solid #86efac; }
+  .badge-alt { background:#f1f5f9; color:var(--muted); border:1px solid #cbd5e1; }
+
+  /* Screenshot */
+  .screenshot-section { margin-top:10px; padding:14px 24px; border-top:1px dashed var(--border); }
+  .screenshot-section summary { font-size:12px; color:var(--muted); cursor:pointer; font-weight:500; list-style:none; display:flex; align-items:center; gap:6px; }
+  .screenshot-section summary::-webkit-details-marker { display:none; }
+  .screenshot-section summary::before { content:'📸'; }
+  .screenshot-img { margin-top:12px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+  .screenshot-img img { width:100%; display:block; }
+
+  /* CTA */
+  .cta-area { margin-top:36px; display:flex; align-items:center; justify-content:space-between; gap:16px; background:var(--card-bg); border:2px solid var(--border); border-radius:14px; padding:24px 28px; }
+  .cta-summary { flex:1; }
+  .cta-summary .selected-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin-bottom:4px; }
+  .cta-summary .selected-info { font-size:15px; font-weight:600; color:var(--navy); }
+  .no-select-msg { font-size:13px; color:var(--muted); font-style:italic; }
+  .btn-secondary { background:transparent; color:var(--navy); border:2px solid var(--navy); padding:14px 24px; border-radius:10px; font-size:14px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; transition:background .2s; white-space:nowrap; }
+  .btn-secondary:hover { background:#f0f4fb; }
+
+  @media(max-width:640px) {
+    header { padding:0 20px; }
+    main { padding:28px 16px 60px; }
+    .hotel-body { flex-direction:column; }
+    .price-panel { flex-direction:row; align-items:center; border-left:none; border-top:1px solid var(--border); padding:14px 20px; min-width:unset; }
+    .hotel-img { width:100%; height:160px; }
+    .compare-grid { grid-template-columns:1fr; }
+    .cta-area { flex-direction:column; align-items:stretch; },.btn-secondary { width:100%; justify-content:center; }
+    .stay-bar { gap:16px; }
+    .stay-divider { display:none; }
+  }
+
+  a.step {
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none; color:inherit;
+    font-size:13px; font-weight:500; color:var(--muted);
+    transition: opacity .2s;
+    cursor: pointer;
+  }
+  a.step:hover { opacity: .75; }
+  a.step.done { color:var(--green); }
+  a.step.active { color:var(--accent); font-weight:600; }
+  a.step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  a.step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+
+  .step-num { transition: transform .2s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Travel<span>Desk</span></div>
+  <div class="header-meta">
+    <span>Business Trip – Greensboro</span>
+    <span class="status-pill">✓ Within Policy</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Steps -->
+    <div class="steps">
+    <a href="flight-blr-to-gso.html" class="step done"><div class="step-num">✓</div><span>BLR → GSO Flight</span></a>
+    <div class="step-line done"></div>
+    <a href="flight-gso-to-got.html" class="step done"><div class="step-num">✓</div><span>GSO → GOT Flight</span></a>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-num">3</div><span>GSO Hotel</span></div>
+    <div class="step-line"></div>
+    <a href="hotel-gothenburg.html" class="step"><div class="step-num">4</div><span>GOT Hotel</span></a>
+  </div>
+  <div class="page-nav"><a href="index.html" class="nav-btn">⌂ Home</a>
+    <a href="flight-gso-to-got.html" class="nav-btn">← Back: GSO → GOT Flight</a>
+  </div>
+
+  <!-- Heading -->
+  <div class="section-heading">
+    <h1>Hotel – Greensboro</h1>
+    <span class="route-badge">GSO STAY</span>
+  </div>
+  <p class="subtitle">Check-in 9 May 2026 &nbsp;·&nbsp; Check-out 29 May 2026 &nbsp;·&nbsp; 20 nights &nbsp;·&nbsp; 1 adult &nbsp;·&nbsp; Max nightly rate: ₹18,428</p>
+
+  <!-- Stay summary -->
+  <div class="stay-bar">
+    <div class="stay-item"><div class="label">Check-in</div><div class="value">9 May 2026</div></div>
+    <div class="stay-divider"></div>
+    <div class="stay-item"><div class="label">Check-out</div><div class="value">29 May 2026</div></div>
+    <div class="stay-divider"></div>
+    <div class="stay-item"><div class="label">Duration</div><div class="value">20 nights</div></div>
+    <div class="stay-divider"></div>
+    <div class="stay-item"><div class="label">Guest</div><div class="value">John Philip</div></div>
+    <div class="stay-divider"></div>
+    <div class="stay-item"><div class="label">Max Nightly Rate</div><div class="value">₹18,428</div></div>
+    <div class="policy-badge">✓ Both options within policy</div>
+  </div>
+
+  <!-- Justification -->
+  <div class="justification-box">
+    <div class="just-title">Why Home2 Suites is the right choice</div>
+    <ul class="just-points">
+      <li><strong>₹3,117 cheaper per night</strong> — Home2 Suites at ₹12,570/night vs SpringHill Suites at ₹15,687/night. Over 20 nights that's a saving of <strong>₹62,340 total</strong> for the company.</li>
+      <li><strong>Better value amenities included</strong> — breakfast, full kitchen with microwave &amp; fridge, Wi-Fi, HDTV, sofa bed, and spacious living area, all at the lower rate. Home2 Suites is a suite-style extended-stay property, ideal for a 20-night business trip.</li>
+      <li><strong>Closer to Volvo Group / Mack Trucks office</strong> — Home2 Suites is only 1.2 km from the Volvo Group North America / Mack Trucks Inc office, compared to 9.7 km for SpringHill Suites.</li>
+      <li><strong>Closer to GSO airport</strong> — Home2 Suites is 3.8 km from GSO Airport vs 7.2 km for SpringHill Suites, reducing commute time on arrival and departure days.</li>
+      <li><strong>Negotiated Volvo Group rate with free cancellation</strong> — booked under the company negotiated rate with free cancellation before 9 May. Hotel Loyalty Points also earned.</li>
+      <li class="warn"><strong>SpringHill Suites is not recommended</strong> — higher nightly rate (₹15,687 vs ₹12,570), significantly farther from the office (9.7 km vs 1.2 km), and food quality at the property has been reported as poor by previous travellers.</li>
+    </ul>
+  </div>
+
+  <!-- Quick compare -->
+  <div class="compare-grid">
+    <div class="compare-card winner">
+      <div class="compare-header">
+        <div class="hotel-name">🏆 Home2 Suites by Hilton</div>
+        <span class="verdict verdict-win">★ Recommended</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-row"><span class="metric">Nightly Rate</span><span class="val-good">₹12,570</span></div>
+        <div class="compare-row"><span class="metric">20-Night Total</span><span class="val-good">₹2,51,400</span></div>
+        <div class="compare-row"><span class="metric">Distance to Office</span><span class="val-good">1.2 km ✓</span></div>
+        <div class="compare-row"><span class="metric">Distance to Airport</span><span class="val-good">3.8 km ✓</span></div>
+        <div class="compare-row"><span class="metric">Rating</span><span class="val-neutral">4.2 / 5 (373 reviews)</span></div>
+        <div class="compare-row"><span class="metric">Breakfast</span><span class="val-good">Included ✓</span></div>
+        <div class="compare-row"><span class="metric">Kitchen</span><span class="val-good">Full kitchen ✓</span></div>
+        <div class="compare-row"><span class="metric">Free Cancellation</span><span class="val-good">Before 9 May ✓</span></div>
+        <div class="compare-row"><span class="metric">Loyalty Points</span><span class="val-good">Earned ✓</span></div>
+      </div>
+    </div>
+    <div class="compare-card loser">
+      <div class="compare-header">
+        <div class="hotel-name">SpringHill Suites by Marriott</div>
+      </div>
+      <div class="compare-col">
+        <div class="hotel-name">Hampton Inn Greensboro Airport</div>
+        <span class="verdict verdict-lose">Not Recommended</span>
+      </div>
+      <div class="compare-body">
+        <div class="compare-row"><span class="metric">Nightly Rate</span><span class="val-bad">₹15,687</span></div>
+        <div class="compare-row"><span class="metric">20-Night Total</span><span class="val-bad">₹3,13,740</span></div>
+        <div class="compare-row"><span class="metric">Distance to Office</span><span class="val-bad">9.7 km ✗</span></div>
+        <div class="compare-row"><span class="metric">Distance to Airport</span><span class="val-bad">7.2 km ✗</span></div>
+        <div class="compare-row"><span class="metric">Rating</span><span class="val-neutral">4.3 / 5 (912 reviews)</span></div>
+        <div class="compare-row"><span class="metric">Breakfast</span><span class="val-good">Included ✓</span></div>
+        <div class="compare-row"><span class="metric">Kitchen</span><span class="val-neutral">Mini fridge only</span></div>
+        <div class="compare-row"><span class="metric">Free Cancellation</span><span class="val-good">Before 8 May ✓</span></div>
+        <div class="compare-row"><span class="metric">Loyalty Points</span><span class="val-bad">Not available ✗</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saving callout -->
+  <div style="background:var(--green-light);border:2px solid #86efac;border-radius:12px;padding:16px 24px;margin-bottom:32px;display:flex;align-items:center;gap:16px;">
+    <div style="font-size:32px;">💰</div>
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:4px;">Total Company Saving by Choosing Home2 Suites</div>
+      <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--green);letter-spacing:-0.5px;">₹62,340</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px;">₹3,117 × 20 nights · Also 8.5 km closer to the office each day</div>
+    </div>
+  </div>
+
+  <!-- ════════ HOTEL CARDS ════════ -->
+  <div class="hotels-label">Hotel Options</div>
+
+  <!-- ═══ HOTEL 1 — RECOMMENDED ═══ -->
+  <div class="hotel-card recommended-card" id="hotel1" onclick="selectHotel(1)">
+    <div class="ribbon">★ &nbsp;Recommended — Closest to Office · Best Value · Volvo Negotiated Rate</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h1"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name">Home2 Suites by Hilton<br>Greensboro Airport, NC</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 7801 National Service Road, Greensboro, NC 27409</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.2</span>
+            <span class="rating-label">Very Good</span>
+            <span class="rating-count">(373 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-green">🍽 Full Kitchen</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Hotel Loyalty Points</span>
+            <span class="tag tag-amber">Free Cancellation to 9-May</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item">🏢 <strong>1.2 km</strong> to Volvo/Mack office</div>
+            <div class="distance-item">✈️ <strong>3.8 km</strong> to GSO Airport</div>
+            <div class="distance-item">⛳ 5.3 km to Topgolf</div>
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main good">₹12,570</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-top:4px;">₹2,51,400</div>
+          <div class="price-policy">✓ Well within policy</div>
+        </div>
+      </div>
+    </div>
+    <!-- Room options -->
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle1" onclick="toggleRooms(event,1)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms1">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Breakfast Included 1 Queen Bed Studio, Non-Smoking</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Kitchen w/Micro &amp; Fridge</span>
+              <span class="room-perk">✓ Spacious Living Room</span>
+              <span class="room-perk">✓ HDTV · Sofa Bed · Work Area</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹12,570</div>
+            <span class="room-badge badge-chosen">Selected</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.7;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Breakfast Included 1 Queen Accessible Studio (Hearing)</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Kitchen w/Micro &amp; Fridge</span>
+              <span class="room-perk">Visual Fire Alarm / Door Alert</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--muted);">₹12,570</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <details class="screenshot-section">
+      <summary>View booking screenshot</summary>
+      <div class="screenshot-img"><img src="/mnt/user-data/uploads/1772636950084_image.png" alt="Home2 Suites screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'"></div>
+    </details>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/LW2NSBYV/property-details?travelers=39652357&company_id=45534&longitude=-79.791977&latitude=36.072636&main_traveler=39652357&destination=Greensboro&region_id=1387&search_type=CITY&start_date=2026-05-09&end_date=2026-05-29&itid=null&adults_per_room=1&initial_latitude=36.072636&initial_longitude=-79.791977&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1a7a4a;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#15623c'" onmouseout="this.style.background='#1a7a4a'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Home2 Suites on Egencia
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ═══ HOTEL 3 — HAMPTON INN ═══ -->
+  <div class="hotel-card recommended-card" id="hotel3" onclick="selectHotel(3)">
+    <div class="ribbon" style="background:#1e4fa3;">★ &nbsp;Good Alternative — Same Quality as Home2 Suites · Volvo Negotiated Rate</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h3"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name">Hampton Inn Greensboro Airport</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 7803 National Service Road, Greensboro, NC 27409</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.3</span>
+            <span class="rating-label">Excellent</span>
+            <span class="rating-count">(688 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Hotel Loyalty Points</span>
+            <span class="tag tag-amber">Free Cancellation to 9-May</span>
+            <span class="tag tag-blue">Pay at hotel</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item">✈️ <strong>3 min</strong> by car to GSO Airport</div>
+            <div class="distance-item">🚶 17 min walk to Greensboro</div>
+          </div>
+          <div style="margin:10px 22px 0;padding:10px 14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;font-size:12px;color:#1e4fa3;font-weight:500;">
+            ℹ Same quality as Home2 Suites — both are Volvo negotiated rate properties with breakfast included. Home2 Suites is preferred due to closer proximity to the Volvo/Mack office (1.2 km vs 3 min drive).
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main good">₹11,212</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-top:4px;">₹2,24,240</div>
+          <div class="price-policy">✓ Well within policy</div>
+        </div>
+      </div>
+    </div>
+    <!-- Room options -->
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle3" onclick="toggleRooms(event,3)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms3">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Breakfast Included 1 King Bed Non-Smoking, HDTV/Free Wi-Fi/Sofa Bed/Refrigerator, Free Breakfast/Complimentary Reception M–Th</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Sofa Bed · Refrigerator</span>
+              <span class="room-perk">✓ HDTV</span>
+              <span class="room-perk">✓ Complimentary Reception Mon–Thu</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹11,212</div>
+            <span class="room-badge badge-chosen">Negotiated</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Breakfast Included 2 Queen Beds Non-Smoking, Free Wi-Fi/Free Reception M/Th, Hot Breakfast Included</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ 2 Queen Beds</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹11,212</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — Breakfast Included 1 King Mobility Access with Tub Non-Smoking, HDTV/Free Wi-Fi/Work Area, Hot Breakfast Included</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Mobility Access</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹11,212</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.7;">
+          <div style="flex:1;">
+            <div class="room-name">Long Term Stay — 1 King Bed Non-Smoking, HDTV/Free Wi-Fi/Sofa Bed/Refrigerator, Free Breakfast/Complimentary Reception M–Th</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">⚠ Free Cancellation to 05-May only</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--amber);">₹14,710</div>
+            <span class="room-badge badge-alt">Non-negotiated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/QWAIH223/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1e4fa3;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#163d8a'" onmouseout="this.style.background='#1e4fa3'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Hampton Inn on Egencia
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ═══ HOTEL 4 — RESIDENCE INN ═══ -->
+  <div class="hotel-card recommended-card" id="hotel4" onclick="selectHotel(4)">
+    <div class="ribbon" style="background:#1e4fa3;">★ &nbsp;Good Alternative — Same Quality as Home2 Suites · Volvo Negotiated Rate</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h4"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name">Residence Inn by Marriott<br>Greensboro Airport</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 7616 Thorndike Road, Greensboro, NC 27409</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.2</span>
+            <span class="rating-label">Very Good</span>
+            <span class="rating-count">(263 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-green">🍽 Full Kitchen + Microwave</span>
+            <span class="tag tag-green">🅿 Free Parking</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Hotel Loyalty Points</span>
+            <span class="tag tag-amber">Free Cancellation to 9-May</span>
+            <span class="tag tag-blue">Pay at hotel</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item">🚶 <strong>16 min</strong> walk to Greensboro</div>
+            <div class="distance-item">🚗 <strong>3 min</strong> by car</div>
+            <div class="distance-item">🚌 <strong>16 min</strong> public transport</div>
+          </div>
+          <div style="margin:10px 22px 0;padding:10px 14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;font-size:12px;color:#1e4fa3;font-weight:500;">
+            ℹ Same quality as Home2 Suites — Volvo negotiated rate, full kitchen, breakfast included. Extended-stay property ideal for 20-night business trip. Home2 Suites preferred due to closer proximity to Volvo/Mack office.
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main good">₹12,665</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-top:4px;">₹2,53,300</div>
+          <div class="price-policy">✓ Well within policy</div>
+        </div>
+      </div>
+    </div>
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle4" onclick="toggleRooms(event,4)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms4">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group Trucks, 0.1 mi — 1 King, Sofa bed, Full kitchen, Microwave, 446sqft/40sqm, Living/sitting area, Dining · Breakfast included</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Full Kitchen · Microwave</span>
+              <span class="room-perk">✓ Sofa Bed · 446 sqft</span>
+              <span class="room-perk">✓ Free Parking</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹12,665</div>
+            <span class="room-badge badge-chosen">Negotiated</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group Trucks, 12+ Nights — Bedroom 1: 1 King, Bedroom 2: 1 Queen, Sofa bed, 2 Bathrooms, Full kitchen, Microwave</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ 2 Bedrooms · 2 Bathrooms</span>
+              <span class="room-perk">✓ Full Kitchen</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--amber);">₹14,430</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group Trucks, 0.9 mi — 1 King, Sofa bed, Full kitchen, Microwave, 615sqft/55sqm, Separate living room · Breakfast included</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi · Free Parking</span>
+              <span class="room-perk">✓ Larger Suite 615 sqft</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--amber);">₹16,506</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.7;">
+          <div style="flex:1;">
+            <div class="room-name">Long Term Stay rate, 12+ Nights — 1 King, Sofa bed, Full kitchen, 446sqft/40sqm, Living/sitting area, Dining</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">⚠ Free Cancellation to 08-May only</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--amber);">₹14,430</div>
+            <span class="room-badge badge-alt">Non-negotiated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/KBM4Q6KK/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1e4fa3;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#163d8a'" onmouseout="this.style.background='#1e4fa3'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Residence Inn on Egencia
+      </a>
+    </div>
+  </div>
+
+
+
+  <!-- ═══ HOTEL 6 — EMBASSY SUITES ═══ -->
+  <div class="hotel-card recommended-card" id="hotel6" onclick="selectHotel(6)">
+    <div class="ribbon" style="background:#1e4fa3;">★ &nbsp;Good Alternative — Similar Quality to Home2 Suites · Slightly Further from Office</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h6"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name">Embassy Suites by Hilton<br>Greensboro Airport</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 204 Centreport Dr, Greensboro, NC 27409</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.1</span>
+            <span class="rating-label">Very Good</span>
+            <span class="rating-count">(1,000 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag tag-green">🍳 Breakfast Included</span>
+            <span class="tag tag-green">🍽 Microwave · Refrigerator</span>
+            <span class="tag tag-green">🥂 Evening Reception</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Hotel Loyalty Points</span>
+            <span class="tag tag-amber">Free Cancellation to 9-May</span>
+            <span class="tag tag-amber">6 min by car to Greensboro</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item">🚗 <strong>6 min</strong> by car</div>
+            <div class="distance-item">🚶 <strong>60+ min</strong> walk</div>
+            <div class="distance-item">🚌 <strong>60+ min</strong> public transport</div>
+          </div>
+          <div style="margin:10px 22px 0;padding:10px 14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;font-size:12px;color:#1e4fa3;font-weight:500;">
+            ℹ Good alternative — similar amenities to Home2 Suites including breakfast, microwave and refrigerator, Volvo negotiated rate, and actually slightly cheaper at ₹12,250/night. However it is slightly further from the Volvo/Mack office (6 min drive vs 1.2 km for Home2 Suites) and not walkable. Home2 Suites remains preferred for office proximity.
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main good">₹12,250</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-top:4px;">₹2,45,000</div>
+          <div class="price-policy">✓ Well within policy</div>
+        </div>
+      </div>
+    </div>
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle6" onclick="toggleRooms(event,6)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms6">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — 2 Room Suite, 1 King Bed, Non-Smoking · Cooked-to-Order Breakfast · Evening Reception · Wi-Fi · Sleeper Sofa · Microwave · Refrigerator</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast (Cooked to Order)</span>
+              <span class="room-perk">✓ Evening Reception</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Microwave · Refrigerator</span>
+              <span class="room-perk">✓ Sleeper Sofa</span>
+              <span class="room-perk">✓ Hotel Loyalty Points</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹12,250</div>
+            <span class="room-badge badge-chosen">Negotiated</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — 2 Room Corner Suite, 1 King Bed, Non-Smoking · Cooked-to-Order Breakfast · Evening Reception · Wi-Fi · Sleeper Sofa · Microwave · Refrigerator</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast (Cooked to Order)</span>
+              <span class="room-perk">✓ Corner Suite</span>
+              <span class="room-perk">✓ Microwave · Refrigerator</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹12,250</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group — 2 Room Suite, 2 Double Beds, Non-Smoking · Cooked-to-Order Breakfast · Evening Reception · Wi-Fi · Sleeper Sofa · Microwave · Refrigerator</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast (Cooked to Order)</span>
+              <span class="room-perk">✓ 2 Double Beds</span>
+              <span class="room-perk">✓ Microwave · Refrigerator</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--green);">₹12,250</div>
+            <span class="room-badge badge-alt">Alternate</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.7;">
+          <div style="flex:1;">
+            <div class="room-name">Long Term Stay — 2 Room Suite, 1 King Bed, Non-Smoking · Breakfast · Evening Reception · Wi-Fi · Sleeper Sofa · Microwave · Refrigerator</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">⚠ Free Cancellation to 05-May only</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--amber);">₹14,476</div>
+            <span class="room-badge badge-alt">Non-negotiated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/PAGOEOJO/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1e4fa3;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#163d8a'" onmouseout="this.style.background='#1e4fa3'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Embassy Suites on Egencia
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ HOTEL 5 — COURTYARD ═══ -->
+  <div class="hotel-card discouraged" id="hotel5" onclick="selectHotel(5)">
+    <div class="ribbon-warn">✗ &nbsp;Not Recommended — No Free Breakfast Despite Same Rate as Home2 Suites</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h5"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name" style="color:var(--red);">Courtyard by Marriott<br>Greensboro Airport</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 7811 National Service Road, Greensboro, NC 27409</div>
+          <div class="hotel-rating">
+            <span class="rating-score">4.3</span>
+            <span class="rating-label">Excellent</span>
+            <span class="rating-count">(680 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-green">★ Volvo Negotiated Rate</span>
+            <span class="tag" style="background:#fdf0ee;color:var(--red);border:1px solid #f5b7b1;">✗ No Free Breakfast</span>
+            <span class="tag" style="background:#fdf0ee;color:var(--red);border:1px solid #f5b7b1;">✗ No Kitchen / Stove / Microwave</span>
+            <span class="tag tag-green">🅿 Free Parking</span>
+            <span class="tag tag-blue">📶 Free Wi-Fi</span>
+            <span class="tag tag-blue">🏨 Hotel Loyalty Points</span>
+            <span class="tag tag-amber">Free Cancellation to 9-May</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item">🚶 <strong>18 min</strong> walk to Greensboro</div>
+            <div class="distance-item">🚗 <strong>4 min</strong> by car</div>
+            <div class="distance-item">🚌 <strong>18 min</strong> public transport</div>
+          </div>
+          <div style="margin:10px 22px 0;padding:10px 14px;background:#fdf0ee;border:1px solid #f5b7b1;border-radius:8px;font-size:12px;color:var(--red);font-weight:500;">
+            ⚠ Same nightly rate as Home2 Suites (₹12,769 vs ₹12,570) but <strong>breakfast is not included</strong> and <strong>no kitchen, stove or microwave</strong> in the room. For a 20-night stay this means additional daily meal expenses. Home2 Suites offers far better value — breakfast included, full kitchen with stove, microwave &amp; fridge, and is closer to the Volvo/Mack office.
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main over">₹12,769</div>
+          <div class="price-per">per night</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--red);letter-spacing:-0.5px;margin-top:4px;">₹2,55,380</div>
+          <div class="price-policy over">⚠ No breakfast included</div>
+        </div>
+      </div>
+    </div>
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle5" onclick="toggleRooms(event,5)">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms5">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group Trucks, 0.1 mi — 1 King, Sofa bed, Mini fridge, 325sqft/29sqm, Living/sitting area, Wireless internet</div>
+            <div class="room-perks">
+              <span class="room-perk" style="color:var(--red);">✗ No Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ Mini Fridge · Sofa Bed</span>
+              <span class="room-perk" style="color:var(--red);">✗ No Kitchen / Stove / Microwave</span>
+              <span class="room-perk">✓ Free Parking</span>
+              <span class="room-perk">✓ Hotel Loyalty Points</span>
+              <span class="room-perk">✓ Pay at hotel</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--red);">₹12,769</div>
+            <span class="room-badge" style="background:#fdf0ee;color:var(--red);border:1px solid #f5b7b1;">No Breakfast</span>
+          </div>
+        </div>
+        <div class="room-row" style="opacity:.85;">
+          <div style="flex:1;">
+            <div class="room-name">Volvo Group Trucks, 0.1 mi — 2 Queen, Mini fridge, 375sqft/34sqm, Wireless internet, Complimentary, Wired internet</div>
+            <div class="room-perks">
+              <span class="room-perk" style="color:var(--red);">✗ No Breakfast</span>
+              <span class="room-perk">✓ Wi-Fi</span>
+              <span class="room-perk">✓ 2 Queen Beds · 375 sqft</span>
+              <span class="room-perk" style="color:var(--red);">✗ No Kitchen / Stove / Microwave</span>
+              <span class="room-perk">✓ Free Parking</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--red);">₹12,769</div>
+            <span class="room-badge" style="background:#fdf0ee;color:var(--red);border:1px solid #f5b7b1;">No Breakfast</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/NV77RF7N/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#a93226'" onmouseout="this.style.background='var(--red)'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        View Courtyard on Egencia
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ HOTEL 2 — NOT RECOMMENDED ═══ -->
+  <div class="hotel-card discouraged" id="hotel2" onclick="selectHotel(2)">
+    <div class="ribbon-warn">✗ &nbsp;Not Recommended — Higher Cost · Much Farther from Office · Poor Food Quality</div>
+    <div style="display:flex;align-items:flex-start;">
+      <div class="hotel-body" style="flex:1;">
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <div class="select-radio-hotel" id="radio-h2"></div>
+        </div>
+        <div style="flex:1;">
+          <div class="hotel-name-row">
+            <div>
+              <div class="hotel-name" style="color:var(--red);">SpringHill Suites by Marriott<br>Greensboro</div>
+              <div class="stars">★★★</div>
+            </div>
+          </div>
+          <div class="hotel-address">📍 6006 Landmark Center Blvd, Greensboro, NC 27407</div>
+          <div class="hotel-rating">
+            <span class="rating-score" style="background:var(--muted);">4.3</span>
+            <span class="rating-label">Excellent</span>
+            <span class="rating-count">(912 reviews)</span>
+          </div>
+          <div class="hotel-tags">
+            <span class="tag tag-red">✗ 9.7 km from Office</span>
+            <span class="tag tag-red">✗ 7.2 km from Airport</span>
+            <span class="tag tag-red">✗ Poor food quality reported</span>
+            <span class="tag tag-red">✗ No Loyalty Points</span>
+            <span class="tag tag-amber">⚠ +₹3,117/night vs Home2</span>
+          </div>
+          <div class="distance-row">
+            <div class="distance-item" style="color:var(--red);">🏢 <strong>9.7 km</strong> to Volvo/Mack office</div>
+            <div class="distance-item" style="color:var(--red);">✈️ <strong>7.2 km</strong> to GSO Airport</div>
+            <div class="distance-item">🎪 0.7 km to Celebration Station</div>
+          </div>
+        </div>
+      </div>
+      <div class="price-panel">
+        <div style="text-align:right;">
+          <div class="price-main bad">₹15,687</div>
+          <div class="price-per">per night (flexible)</div>
+          <div style="margin-top:6px;font-size:13px;color:var(--muted);">20 nights</div>
+          <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--red);letter-spacing:-0.5px;margin-top:4px;">₹3,13,740</div>
+          <div class="price-policy over">⚠ ₹62,340 more than Home2</div>
+        </div>
+      </div>
+    </div>
+    <!-- Room options -->
+    <div class="rooms-section">
+      <div class="rooms-toggle" id="rtoggle2" onclick="toggleRooms(event,2)" style="color:var(--red);">
+        <span>Available room types</span>
+        <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="rooms-body" id="rooms2">
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Suite, 1 King Bed with Sofa Bed</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span class="room-perk">✓ Free Parking</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points</span>
+              <span style="font-size:11px;color:var(--amber);font-weight:600;">5 rooms remaining</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--navy);">₹10,908</div>
+            <span class="room-badge badge-alt">Base rate</span>
+          </div>
+        </div>
+        <div class="room-row">
+          <div style="flex:1;">
+            <div class="room-name">Flexible Rate — 1 King, Sofa Bed, Mini Fridge, Microwave, 375 sqft</div>
+            <div class="room-perks">
+              <span class="room-perk">✓ Free Breakfast</span>
+              <span class="room-perk">✓ Free Wi-Fi</span>
+              <span style="font-size:11px;color:var(--red);font-weight:600;">✗ No Loyalty Points</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="room-price" style="color:var(--red);">₹15,687</div>
+            <span class="room-badge" style="background:var(--red-light);color:var(--red);border:1px solid #f5b7b1;">Not Chosen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <details class="screenshot-section">
+      <summary>View booking screenshot</summary>
+      <div class="screenshot-img"><img src="/mnt/user-data/uploads/1772637051422_image.png" alt="SpringHill Suites screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'"></div>
+    </details>
+    <div style="padding:12px 22px 16px;">
+      <a href="https://www.egencia.co.in/hotels/HAHR27BV/property-details?travelers=39652357&company_id=45534&longitude=-79.791977&latitude=36.072636&main_traveler=39652357&destination=Greensboro&region_id=1387&search_type=CITY&start_date=2026-05-09&end_date=2026-05-29&itid=null&adults_per_room=1&initial_latitude=36.072636&initial_longitude=-79.791977&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank" onclick="event.stopPropagation()"
+         style="display:inline-flex;align-items:center;gap:8px;background:#c0392b;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;"
+         onmouseover="this.style.background='#a93226'" onmouseout="this.style.background='#c0392b'">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book SpringHill Suites on Egencia
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div class="cta-summary">
+      <div class="selected-label">Your selection</div>
+      <div id="cta-info" class="selected-info">Home2 Suites by Hilton — ₹12,570/night · 20 nights · ₹2,51,400 total</div>
+      <div id="cta-sub" style="font-size:12px;color:var(--green);margin-top:4px;font-weight:600;">✓ Closest to office · Best value · Volvo negotiated rate</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <a href="https://www.egencia.co.in/hotels/search?search_page=SEARCH_RESULTS&company_id=45534&source=HOTEL_WEBAPP&destination=Greensboro&check_in_date=2026-05-09&check_out_date=2026-05-29" target="_blank" class="btn-secondary" style="text-decoration:none;text-align:center;">
+        View on Egencia ↗
+      </a>
+      <a id="book-btn" href="https://www.egencia.co.in/hotels/LW2NSBYV/property-details?travelers=39652357&company_id=45534&longitude=-79.791977&latitude=36.072636&main_traveler=39652357&destination=Greensboro&region_id=1387&search_type=CITY&start_date=2026-05-09&end_date=2026-05-29&itid=null&adults_per_room=1&initial_latitude=36.072636&initial_longitude=-79.791977&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended" target="_blank"
+        style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Sora',sans-serif;white-space:nowrap;transition:background .2s;"
+        onmouseover="this.style.background='#142d5c'" onmouseout="this.style.background='var(--navy)'">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Book Home2 Suites
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  let selectedHotel = 1;
+
+  const hotels = {
+    1: {
+      info: 'Home2 Suites by Hilton — ₹12,570/night · 20 nights · ₹2,51,400 total',
+      sub: '✓ Closest to office · Best value · Volvo negotiated rate',
+      subColor: 'var(--green)',
+      link: 'https://www.egencia.co.in/hotels/LW2NSBYV/property-details?travelers=39652357&company_id=45534&longitude=-79.791977&latitude=36.072636&main_traveler=39652357&destination=Greensboro&region_id=1387&search_type=CITY&start_date=2026-05-09&end_date=2026-05-29&itid=null&adults_per_room=1&initial_latitude=36.072636&initial_longitude=-79.791977&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Home2 Suites'
+    },
+    3: {
+      info: 'Hampton Inn Greensboro Airport — ₹11,212/night · 20 nights · ₹2,24,240 total',
+      sub: '✓ Volvo negotiated rate · Good alternative to Home2 Suites · Breakfast included',
+      subColor: 'var(--accent)',
+      link: 'https://www.egencia.co.in/hotels/QWAIH223/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Hampton Inn'
+    },
+    4: {
+      info: 'Residence Inn by Marriott Greensboro Airport — ₹12,665/night · 20 nights · ₹2,53,300 total',
+      sub: '✓ Volvo negotiated rate · Full kitchen · Breakfast included · Good alternative to Home2 Suites',
+      subColor: 'var(--accent)',
+      link: 'https://www.egencia.co.in/hotels/KBM4Q6KK/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Residence Inn'
+    },
+    6: {
+      info: 'Embassy Suites by Hilton Greensboro Airport — ₹12,250/night · 20 nights · ₹2,45,000 total',
+      sub: '✓ Volvo negotiated rate · Breakfast included · Good alternative — slightly further from office (6 min drive)',
+      subColor: 'var(--accent)',
+      link: 'https://www.egencia.co.in/hotels/PAGOEOJO/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book Embassy Suites'
+    },
+    5: {
+      info: 'Courtyard by Marriott Greensboro Airport — ₹12,769/night · 20 nights · ₹2,55,380 total',
+      sub: '⚠ Not recommended — no free breakfast despite similar rate to Home2 Suites',
+      subColor: 'var(--red)',
+      link: 'https://www.egencia.co.in/hotels/NV77RF7N/property-details?travelers=39652357&company_id=45534&destination=Greensboro&start_date=2026-05-09&end_date=2026-05-29&main_traveler=39652357&latitude=36.0802534&longitude=-79.96855339999999&adults_per_room=1&search_type=ADDRESS&initial_latitude=36.0802534&initial_longitude=-79.96855339999999&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'View Courtyard'
+    },
+    2: {
+      info: 'SpringHill Suites by Marriott — ₹15,687/night · 20 nights · ₹3,13,740 total',
+      sub: '⚠ Not recommended — ₹62,340 more expensive · 9.7 km from office',
+      subColor: 'var(--red)',
+      link: 'https://www.egencia.co.in/hotels/HAHR27BV/property-details?travelers=39652357&company_id=45534&longitude=-79.791977&latitude=36.072636&main_traveler=39652357&destination=Greensboro&region_id=1387&search_type=CITY&start_date=2026-05-09&end_date=2026-05-29&itid=null&adults_per_room=1&initial_latitude=36.072636&initial_longitude=-79.791977&qualified_for_package_rates=false&adults=1&rate_sort_type=recommended',
+      btnText: 'Book SpringHill (Not Recommended)'
+    }
+  };
+
+  function selectHotel(n) {
+    selectedHotel = n;
+    document.querySelectorAll('.hotel-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('hotel' + n).classList.add('selected');
+    const h = hotels[n];
+    document.getElementById('cta-info').textContent = h.info;
+    document.getElementById('cta-info').style.color = n === 2 ? 'var(--red)' : 'var(--navy)';
+    document.getElementById('cta-sub').textContent = h.sub;
+    document.getElementById('cta-sub').style.color = h.subColor;
+    btn.href = h.link;
+    btn.textContent = '';
+    btn.innerHTML = `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg> ${h.btnText}`;
+    btn.style.background = n === 2 ? 'var(--red)' : 'var(--navy)';
+  }
+
+  function toggleRooms(e, n) {
+    e.stopPropagation();
+    document.getElementById('rooms' + n).classList.toggle('open');
+    document.getElementById('rtoggle' + n).classList.toggle('open');
+  }
+
+  window.onload = () => selectHotel(1);
+
+
+
+
+
+</script>
+</body>
+</html>

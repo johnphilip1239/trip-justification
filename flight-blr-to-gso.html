@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Travel – Trip Justification</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --gold: #c9a84c;
+    --gold-light: #f0d99a;
+    --cream: #faf8f3;
+    --card-bg: #ffffff;
+    --text: #1a2740;
+    --muted: #6b7a99;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --border: #e4e0d6;
+    --accent: #1e4fa3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.35);
+  }
+  .logo {
+    font-family:'Cormorant Garamond',serif;
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: .5px;
+  }
+  .logo span { color: #fff; }
+  .header-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,.55);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .status-pill {
+    background: rgba(201,168,76,.18);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .4px;
+  }
+
+  /* ── Page wrapper ── */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Progress steps ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .step.active { color: var(--accent); }
+  .step.done { color: var(--green); }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+  }
+  .step.active .step-num { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .step.done .step-num { background: var(--green); color: #fff; border-color: var(--green); }
+  .step-line {
+    flex: 1; height: 2px;
+    background: var(--border);
+    margin: 0 12px;
+  }
+  .step-line.done { background: var(--green); }
+
+  /* ── Section title ── */
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .section-heading h1 {
+    font-family:'Cormorant Garamond',serif;
+    font-size: 30px;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .route-badge {
+    background: var(--navy);
+    color: var(--gold);
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* ── Policy notice ── */
+  .policy-notice {
+    background: var(--green-light);
+    border-left: 4px solid var(--green);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--green);
+    font-weight: 500;
+  }
+  .policy-notice svg { flex-shrink: 0; }
+
+  /* ── Flight cards ── */
+  .flights-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .flight-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color .25s, box-shadow .25s;
+    cursor: pointer;
+  }
+  .flight-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 6px 28px rgba(30,79,163,.1);
+  }
+  .flight-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 6px 28px rgba(30,79,163,.15);
+  }
+
+  .card-header {
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+  }
+  .select-radio {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color .2s;
+  }
+  .flight-card.selected .select-radio {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .select-radio::after {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .flight-card.selected .select-radio::after { opacity: 1; }
+
+  .airline-logo {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: #f0f4ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: .5px;
+  }
+
+  .flight-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .time-block { text-align: center; }
+  .time-block .time {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -.5px;
+  }
+  .time-block .airport {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: .8px;
+    text-transform: uppercase;
+  }
+  .flight-route {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .duration { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .route-line {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+  }
+  .line { flex: 1; height: 1.5px; background: #d0d8e8; }
+  .stops-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: #f0f4ff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .price-block { text-align: right; }
+  .price-block .price {
+    font-family:'Sora',sans-serif;
+    font-size:26px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .price-block .per { font-size: 11px; color: var(--muted); }
+
+  .card-badges {
+    display: flex;
+    gap: 8px;
+    padding: 0 24px 4px 60px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: .3px;
+  }
+  .badge-egencia { background: #fff3db; color: #b07d00; border: 1px solid #f0c84a; }
+  .badge-best { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+  /* ── Expandable details ── */
+  .details-toggle {
+    padding: 10px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .details-toggle:hover { background: #f8faff; }
+  .chevron {
+    transition: transform .3s;
+    display: flex; align-items: center;
+  }
+  .details-toggle.open .chevron { transform: rotate(180deg); }
+
+  .details-body {
+    display: none;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    background: #f8faff;
+  }
+  .details-body.open { display: block; }
+
+  .leg {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .leg::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 24px;
+    bottom: -20px;
+    width: 1px;
+    background: #c8d3e8;
+  }
+  .leg:last-child::before { display: none; }
+  .leg-dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .leg-dot svg { width: 14px; height: 14px; }
+  .leg-info { flex: 1; }
+  .leg-info .leg-airports {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .leg-info .leg-time { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .leg-info .leg-meta {
+    font-size: 12px;
+    color: #8898b8;
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .leg-meta span {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  .layover-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: -8px 0 20px 46px;
+    font-size: 12px;
+    color: #e07b00;
+    font-weight: 500;
+  }
+  .layover-row::before { content: '⏱'; font-size: 14px; }
+
+  /* ── Screenshot section ── */
+  .screenshot-section {
+    margin-top: 10px;
+    padding: 14px 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .screenshot-section summary {
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 500;
+    list-style: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .screenshot-section summary::-webkit-details-marker { display: none; }
+  .screenshot-section summary::before { content: '📸'; }
+  .screenshot-img {
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .screenshot-img img { width: 100%; display: block; }
+
+  /* ── CTA area ── */
+  .cta-area {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .cta-summary { flex: 1; }
+  .cta-summary .selected-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .cta-summary .selected-info {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .cta-summary .selected-price {
+    font-family:'Cormorant Garamond',serif;
+    font-size: 24px;
+    color: var(--navy);
+    margin-top: 2px;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--navy);
+    border: 2px solid var(--navy);
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    transition: background .2s;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover { background: #f0f4fb; }
+
+  .no-select-msg {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    header { padding: 0 20px; }
+    main { padding: 28px 16px 60px; }
+    .flight-main { flex-wrap: wrap; gap: 12px; }
+    .cta-area { flex-direction: column; align-items: stretch; }, .btn-secondary { width: 100%; justify-content: center; }
+    .section-heading { flex-wrap: wrap; gap: 8px; }
+    .section-heading h1 { font-size: 22px; }
+  }
+
+  a.step {
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none; color:inherit;
+    font-size:13px; font-weight:500; color:var(--muted);
+    transition: opacity .2s;
+    cursor: pointer;
+  }
+  a.step:hover { opacity: .75; }
+  a.step.done { color:var(--green); }
+  a.step.active { color:var(--accent); font-weight:600; }
+  a.step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  a.step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+
+  .step-num { transition: transform .2s; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">Travel<span>Desk</span></div>
+  <div class="header-meta">
+    <span>Business Trip – May 2026</span>
+    <span class="status-pill">✓ Within Policy</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Progress Steps -->
+      <div class="steps">
+    <div class="step active"><div class="step-num">1</div><span>BLR → GSO Flight</span></div>
+    <div class="step-line done"></div>
+    <a href="flight-gso-to-got.html" class="step"><div class="step-num">2</div><span>GSO → GOT Flight</span></a>
+    <div class="step-line"></div>
+    <a href="hotel-gso.html" class="step"><div class="step-num">3</div><span>GSO Hotel</span></a>
+    <div class="step-line"></div>
+    <a href="hotel-gothenburg.html" class="step"><div class="step-num">4</div><span>GOT Hotel</span></a>
+  </div>
+
+
+  <!-- ═══ FLIGHT 1 ═══ -->
+  <div class="flight-card selected" id="card1" onclick="selectFlight(1)">
+    <div class="card-header">
+      <div class="select-radio selected" id="radio1"></div>
+      <div class="airline-logo">QR</div>
+      <div class="flight-main">
+        <div class="time-block">
+          <div class="time">3:55<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport">BLR</div>
+        </div>
+        <div class="flight-route">
+          <div class="duration">28h 10min</div>
+          <div class="route-line">
+            <div class="line"></div>
+            <div class="stops-badge">2 stops</div>
+            <div class="line"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">via DOH · MIA</div>
+        </div>
+        <div class="time-block">
+          <div class="time">10:35<span style="font-size:14px;font-weight:400">pm</span></div>
+          <div class="airport">GSO</div>
+        </div>
+      </div>
+      <div class="price-block">
+        <div class="price">₹62,316</div>
+        <div class="per">one-way</div>
+      </div>
+    </div>
+    <div class="card-badges">
+      <span class="badge badge-egencia">★ Egencia Preferred</span>
+    </div>
+    <div class="details-toggle" id="toggle1" onclick="toggleDetails(event, 1)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </div>
+    <div class="details-body" id="details1">
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Bengaluru (BLR) → Doha (DOH)</div>
+          <div class="leg-time">3:55 am → 5:45 am &nbsp;·&nbsp; 4h 20min</div>
+          <div class="leg-meta">
+            <span>QR 4787 (operated by IndiGo)</span>
+            <span>Airbus A321</span>
+            <span>Economy (O)</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">2h 30min layover in Doha (DOH)</div>
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Doha (DOH) → Miami (MIA)</div>
+          <div class="leg-time">8:15 am → 4:30 pm &nbsp;·&nbsp; 15h 15min</div>
+          <div class="leg-meta">
+            <span>QR 777</span>
+            <span>Airbus A350-1000</span>
+            <span>Economy (O)</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">3h 43min layover in Miami (MIA)</div>
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Miami (MIA) → Greensboro (GSO)</div>
+          <div class="leg-time">8:13 pm → 10:35 pm &nbsp;·&nbsp; 2h 22min</div>
+          <div class="leg-meta">
+            <span>AA 3394</span>
+            <span>Embraer 175</span>
+            <span>Economy (O)</span>
+          </div>
+        </div>
+      </div>
+      <details class="screenshot-section">
+        <summary>View booking screenshot</summary>
+        <div class="screenshot-img">
+          <img src="/mnt/user-data/uploads/1772635751330_image.png" alt="Flight 1 booking screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'">
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═══ FLIGHT 2 ═══ -->
+  <div class="flight-card" id="card2" onclick="selectFlight(2)">
+    <div class="card-header">
+      <div class="select-radio" id="radio2"></div>
+      <div class="airline-logo">QR</div>
+      <div class="flight-main">
+        <div class="time-block">
+          <div class="time">4:00<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport">BLR</div>
+        </div>
+        <div class="flight-route">
+          <div class="duration">28h 5min</div>
+          <div class="route-line">
+            <div class="line"></div>
+            <div class="stops-badge">2 stops</div>
+            <div class="line"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">via DOH · MIA</div>
+        </div>
+        <div class="time-block">
+          <div class="time">10:35<span style="font-size:14px;font-weight:400">pm</span></div>
+          <div class="airport">GSO</div>
+        </div>
+      </div>
+      <div class="price-block">
+        <div class="price">₹62,316</div>
+        <div class="per">one-way</div>
+      </div>
+    </div>
+    <div class="card-badges">
+      <span class="badge badge-egencia">★ Egencia Preferred</span>
+      <span class="badge badge-best">⭐ Best Fare Option</span>
+    </div>
+    <div class="details-toggle" id="toggle2" onclick="toggleDetails(event, 2)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </div>
+    <div class="details-body" id="details2">
+      <!-- Leg 1 -->
+      <div class="leg">
+        <div class="leg-dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg>
+        </div>
+        <div class="leg-info">
+          <div class="leg-airports">Bengaluru (BLR) → Doha (DOH)</div>
+          <div class="leg-time">4:00 am → 5:30 am &nbsp;·&nbsp; 4h 0min</div>
+          <div class="leg-meta">
+            <span>QR 573</span>
+            <span>Boeing 777-300ER</span>
+            <span>Economy (O)</span>
+            
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">2h 45min layover in Doha (DOH)</div>
+      <!-- Leg 2 -->
+      <div class="leg">
+        <div class="leg-dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg>
+        </div>
+        <div class="leg-info">
+          <div class="leg-airports">Doha (DOH) → Miami (MIA)</div>
+          <div class="leg-time">8:15 am → 4:30 pm &nbsp;·&nbsp; 15h 15min</div>
+          <div class="leg-meta">
+            <span>QR 777</span>
+            <span>Airbus A350-1000</span>
+            <span>Economy (O)</span>
+            
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">3h 43min layover in Miami (MIA)</div>
+      <!-- Leg 3 -->
+      <div class="leg">
+        <div class="leg-dot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg>
+        </div>
+        <div class="leg-info">
+          <div class="leg-airports">Miami (MIA) → Greensboro (GSO)</div>
+          <div class="leg-time">8:13 pm → 10:35 pm &nbsp;·&nbsp; 2h 22min</div>
+          <div class="leg-meta">
+            <span>AA 3394</span>
+            <span>Embraer 175</span>
+            <span>Economy (O)</span>
+            
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      <!-- Screenshot -->
+      <details class="screenshot-section">
+        <summary>View booking screenshot</summary>
+        <div class="screenshot-img">
+          <img src="/mnt/user-data/uploads/1772635766553_image.png" alt="Flight 2 booking screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot preview not available in standalone file.</div>'">
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div class="cta-summary">
+      <div class="selected-label">Your selection</div>
+      <div id="cta-info" class="selected-info no-select-msg">No flight selected yet — click a card above</div>
+      <div id="cta-price" class="selected-price" style="display:none">₹62,316</div>
+    </div>
+    </div>
+
+</main>
+
+<script>
+  let selected = null;
+
+  function selectFlight(n) {
+    selected = n;
+    document.querySelectorAll('.flight-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('card' + n).classList.add('selected');
+
+    const flights = {
+      1: { label: 'Flight 1 – QR 4787/777/AA 3394 · Dep 3:55 am · Arr 10:35 pm', price: '₹62,316' },
+      2: { label: 'Flight 2 – QR 573/777/AA 3394 · Dep 4:00 am · Arr 10:35 pm', price: '₹62,316' }
+    };
+
+    const info = document.getElementById('cta-info');
+    const price = document.getElementById('cta-price');
+
+    info.textContent = flights[n].label;
+    info.classList.remove('no-select-msg');
+    price.style.display = 'block';
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }
+
+  function toggleDetails(e, n) {
+    e.stopPropagation();
+    const body = document.getElementById('details' + n);
+    const toggle = document.getElementById('toggle' + n);
+    body.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+
+
+
+
+
+</script>
+</body>
+</html>

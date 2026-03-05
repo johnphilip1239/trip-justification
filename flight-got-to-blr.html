@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Travel – Flight GOT → BLR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --gold: #c9a84c;
+    --cream: #faf8f3;
+    --white: #ffffff;
+    --text: #1a2740;
+    --muted: #6b7a99;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --border: #e4e0d6;
+    --accent: #1e4fa3;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --amber: #b45309;
+    --purple: #6d28d9;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; font-size:14px; }
+
+  header { background:var(--navy); padding:0 48px; display:flex; align-items:center; justify-content:space-between; height:68px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,.35); }
+  .logo { font-family:'Cormorant Garamond',serif; font-weight:700; color:var(--gold); font-size:24px; letter-spacing:.5px; }
+  .logo span { color:#fff; }
+  .header-meta { font-size:12px; color:rgba(255,255,255,.55); display:flex; gap:24px; align-items:center; }
+  .status-pill { background:rgba(201,168,76,.18); border:1px solid var(--gold); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.5px; }
+
+  main { max-width:980px; margin:0 auto; padding:48px 24px 80px; }
+
+  .steps { display:flex; align-items:center; margin-bottom:44px; }
+  .step { display:flex; align-items:center; gap:10px; font-size:12px; font-weight:500; color:var(--muted); }
+  .step.active { color:var(--accent); font-weight:600; }
+  .step.done { color:var(--green); }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; border:2px solid currentColor; flex-shrink:0; }
+  .step.active .step-num { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .step.done .step-num { background:var(--green); color:#fff; border-color:var(--green); }
+  .step-line { flex:1; height:2px; background:var(--border); margin:0 12px; }
+  .step-line.done { background:var(--green); }
+
+  .page-nav { display:flex; gap:12px; margin-bottom:28px; }
+  .nav-btn { background:#fff; border:2px solid var(--border); color:var(--navy); padding:10px 20px; border-radius:8px; font-size:12px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color .2s,background .2s; }
+  .nav-btn:hover { border-color:var(--accent); background:#f8faff; }
+
+  .section-heading { display:flex; align-items:baseline; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+  .section-heading h1 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:34px; color:var(--navy); line-height:1.15; }
+  .route-badge { background:var(--navy); color:var(--gold); font-size:11px; font-weight:700; letter-spacing:1.5px; padding:5px 14px; border-radius:20px; text-transform:uppercase; }
+  .subtitle { font-size:13px; color:var(--muted); margin-bottom:32px; line-height:1.6; }
+
+  /* Justification box */
+  .just-box { background:#fff; border:1.5px solid #86efac; border-radius:14px; padding:22px 28px; margin-bottom:32px; }
+  .just-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; color:var(--navy); margin-bottom:12px; }
+  .just-box ul { padding-left:18px; display:flex; flex-direction:column; gap:8px; }
+  .just-box li { font-size:13px; color:var(--text); line-height:1.6; }
+  .just-box li.warn { color:var(--amber); }
+
+  /* Flight cards */
+  .flight-card { background:#fff; border:2px solid var(--border); border-radius:14px; margin-bottom:20px; overflow:hidden; transition:border-color .25s,box-shadow .25s; cursor:pointer; }
+  .flight-card:hover { border-color:#93c5fd; box-shadow:0 4px 20px rgba(30,79,163,.1); }
+  .flight-card.selected { border-color:var(--accent); box-shadow:0 6px 28px rgba(30,79,163,.15); }
+  .flight-card.recommended { border-color:#86efac; }
+  .flight-card.recommended:hover { border-color:var(--green); }
+  .flight-card.recommended.selected { border-color:var(--green); box-shadow:0 6px 28px rgba(26,122,74,.2); }
+
+  .ribbon { background:var(--green); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+  .ribbon-alt { background:var(--muted); color:#fff; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:7px 20px; display:flex; align-items:center; gap:8px; }
+
+  .card-header { display:flex; align-items:center; gap:16px; padding:20px 22px 16px; }
+  .select-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; position:relative; transition:border-color .2s; }
+  .select-radio::after { content:''; position:absolute; inset:3px; border-radius:50%; background:var(--accent); opacity:0; transition:opacity .2s; }
+  .flight-card.selected .select-radio { border-color:var(--accent); }
+  .flight-card.selected .select-radio::after { opacity:1; }
+  .flight-card.recommended.selected .select-radio { border-color:var(--green); }
+  .flight-card.recommended.selected .select-radio::after { background:var(--green); opacity:1; }
+
+  .airline-logo { width:44px; height:44px; border-radius:10px; background:var(--navy); color:var(--gold); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; letter-spacing:.5px; flex-shrink:0; }
+  .flight-main { flex:1; display:flex; align-items:center; gap:20px; }
+  .time-block { text-align:center; }
+  .time { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; color:var(--navy); line-height:1; }
+  .airport { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:1px; margin-top:3px; }
+  .flight-route { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .duration { font-size:12px; font-weight:600; color:var(--navy); }
+  .route-line { width:100%; display:flex; align-items:center; gap:4px; }
+  .line { flex:1; height:1.5px; background:var(--border); }
+  .stops-badge { font-size:10px; color:var(--muted); white-space:nowrap; background:var(--cream); border:1px solid var(--border); padding:2px 8px; border-radius:10px; }
+  .price-block { text-align:right; }
+  .price { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; color:var(--navy); }
+  .per { font-size:11px; color:var(--muted); }
+
+  .card-badges { display:flex; gap:8px; flex-wrap:wrap; padding:0 22px 14px; }
+  .badge { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; }
+  .badge-egencia { background:#fff3db; color:#b07d00; border:1px solid #f0c84a; }
+  .badge-best { background:var(--green-light); color:var(--green); border:1px solid #86efac; }
+  .badge-warn { background:var(--red-light); color:var(--red); border:1px solid #f5b7b1; }
+
+  .details-toggle { display:flex; align-items:center; justify-content:space-between; padding:12px 22px; border-top:1px solid var(--border); cursor:pointer; font-size:12px; font-weight:600; color:var(--accent); user-select:none; }
+  .details-toggle:hover { background:#f8faff; }
+  .chevron { transition:transform .25s; }
+  .details-toggle.open .chevron { transform:rotate(180deg); }
+  .details-body { display:none; padding:16px 22px 20px; border-top:1px solid var(--border); background:#fafbff; }
+  .details-body.open { display:block; }
+
+  .leg { display:flex; gap:14px; margin-bottom:12px; }
+  .leg-dot { width:32px; height:32px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .leg-dot svg { width:16px; height:16px; }
+  .leg-info { flex:1; }
+  .leg-airports { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+  .leg-time { font-size:12px; color:var(--muted); margin-bottom:4px; }
+  .leg-meta { display:flex; gap:12px; flex-wrap:wrap; }
+  .leg-meta span { font-size:11px; color:var(--muted); background:var(--cream); border:1px solid var(--border); padding:2px 8px; border-radius:8px; }
+  .layover-row { text-align:center; font-size:11px; color:var(--amber); font-weight:600; padding:6px 0 10px; border-left:2px dashed var(--border); margin-left:15px; padding-left:28px; margin-bottom:12px; }
+
+  .screenshot-section { margin-top:10px; padding:14px 24px; border-top:1px dashed var(--border); }
+  .screenshot-section summary { font-size:12px; color:var(--muted); cursor:pointer; font-weight:500; list-style:none; display:flex; align-items:center; gap:6px; }
+  .screenshot-section summary::-webkit-details-marker { display:none; }
+  .screenshot-section summary::before { content:'📸'; }
+  .screenshot-img { margin-top:12px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+  .screenshot-img img { width:100%; display:block; }
+
+  /* Comparison table */
+  .compare-box { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:22px 28px; margin-bottom:32px; overflow-x:auto; }
+  .compare-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; color:var(--navy); margin-bottom:16px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { background:var(--navy); color:#fff; padding:10px 14px; text-align:left; font-weight:600; font-size:11px; letter-spacing:.5px; }
+  td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  tr.recommended-row td { background:var(--green-light); font-weight:600; }
+  .tag-green { background:var(--green-light); color:var(--green); padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
+  .tag-amber { background:#fffbeb; color:var(--amber); padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
+
+  /* CTA */
+  .cta-area { margin-top:36px; display:flex; align-items:center; justify-content:space-between; gap:16px; background:#fff; border:2px solid var(--border); border-radius:14px; padding:24px 28px; }
+  .cta-summary { flex:1; }
+  .selected-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:6px; }
+  .selected-info { font-size:14px; font-weight:600; color:var(--navy); }
+  .btn-secondary { background:transparent; color:var(--navy); border:2px solid var(--navy); padding:14px 24px; border-radius:10px; font-size:13px; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; transition:background .2s; white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+  .btn-secondary:hover { background:#f0f4fb; }
+
+  a.step { text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px; font-size:12px; font-weight:500; }
+  a.step:hover { opacity:.75; }
+
+  @media(max-width:640px) {
+    header { padding:0 16px; }
+    main { padding:24px 16px 60px; }
+    .card-header { flex-wrap:wrap; }
+    .flight-main { min-width:0; }
+    .cta-area { flex-direction:column; align-items:stretch; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Travel<span>Desk</span></div>
+  <div class="header-meta">
+    <span>Business Trip – Return Flight</span>
+    <span class="status-pill">✓ Within Policy</span>
+    <span style="color:rgba(255,255,255,.4);">John Philip · Volvo Group India</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Steps -->
+  <div class="steps">
+    <a href="flight-blr-to-gso.html" class="step done"><div class="step-num">✓</div><span>BLR → GSO</span></a>
+    <div class="step-line done"></div>
+    <a href="flight-gso-to-got.html" class="step done"><div class="step-num">✓</div><span>GSO → GOT</span></a>
+    <div class="step-line done"></div>
+    <a href="hotel-gso.html" class="step done"><div class="step-num">✓</div><span>GSO Hotel</span></a>
+    <div class="step-line done"></div>
+    <a href="hotel-gothenburg.html" class="step done"><div class="step-num">✓</div><span>GOT Hotel</span></a>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-num">5</div><span>GOT → BLR</span></div>
+  </div>
+
+  <!-- Nav -->
+  <div class="page-nav">
+    <a href="index.html" class="nav-btn">⌂ Home</a>
+    <a href="hotel-gothenburg.html" class="nav-btn">← Back: GOT Hotel</a>
+  </div>
+
+  <!-- Heading -->
+  <div class="section-heading">
+    <h1>Return Flight – Gothenburg to Bengaluru</h1>
+    <span class="route-badge">GOT → BLR</span>
+  </div>
+  <p class="subtitle">
+    8 July 2026 &nbsp;·&nbsp; Guest: John Philip, 1 passenger &nbsp;·&nbsp; Economy class &nbsp;·&nbsp;
+    2 options reviewed — Turkish Airlines recommended over LOT Polish
+  </p>
+
+  <!-- Justification -->
+  <div class="just-box">
+    <div class="just-title">Why Turkish Airlines (Flight 1) is the right choice</div>
+    <ul>
+      <li><strong>Only ₹1,593 more expensive</strong> than LOT Polish Airlines (₹65,879 vs ₹64,286) — a negligible difference of ~2.5% for a significantly better flight experience.</li>
+      <li><strong>More reasonable departure time</strong> — Turkish Airlines departs at 10:20 am vs LOT Polish at 7:50 am. The 7:50 am LOT flight requires being at GOT airport before 6 am which is impractical after a full work assignment.</li>
+      <li><strong>Volvo Group India Negotiated Rate</strong> — Turkish Airlines fare is a negotiated corporate rate (refundable, changeable), providing flexibility.</li>
+      <li><strong>Same total journey time</strong> — both options take approximately 21h 20–35min with 2 stops via Istanbul/Warsaw respectively.</li>
+      <li class="warn">⚠ LOT Polish Airlines (Flight 2) is not recommended — ₹64,286 Economy ECOSTAND is non-refundable. The ₹69,271 ECOFULLFLX option is refundable but more expensive than Turkish.</li>
+    </ul>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="compare-box">
+    <div class="compare-title">Side-by-Side Comparison</div>
+    <table>
+      <tr>
+        <th>Option</th>
+        <th>Airline</th>
+        <th>Departure</th>
+        <th>Route</th>
+        <th>Duration</th>
+        <th>Price</th>
+        <th>Refundable</th>
+      </tr>
+      <tr class="recommended-row">
+        <td>✅ Flight 1 <span class="tag-green">Selected</span></td>
+        <td>Turkish Airlines</td>
+        <td>10:20 am, 8 Jul</td>
+        <td>GOT → IST → DEL → BLR</td>
+        <td>21h 20min</td>
+        <td><strong>₹65,879</strong></td>
+        <td>✓ Yes</td>
+      </tr>
+      <tr>
+        <td>Flight 2 <span class="tag-amber">Not Recommended</span></td>
+        <td>LOT Polish Airlines</td>
+        <td>7:50 am, 8 Jul</td>
+        <td>GOT → WAW → DEL → BLR</td>
+        <td>21h 35min</td>
+        <td>₹64,286 (non-refundable)<br>₹69,271 (refundable)</td>
+        <td>✗ Cheapest option non-refundable</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ═══ FLIGHT 1 — TURKISH AIRLINES (RECOMMENDED) ═══ -->
+  <div class="flight-card recommended selected" id="card1" onclick="selectFlight(1)">
+    <div class="ribbon">★ &nbsp;Recommended — Volvo Negotiated Rate · Refundable · Reasonable Departure</div>
+    <div class="card-header">
+      <div class="select-radio" id="radio1"></div>
+      <div class="airline-logo">TK</div>
+      <div class="flight-main">
+        <div class="time-block">
+          <div class="time">10:20<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport">GOT</div>
+        </div>
+        <div class="flight-route">
+          <div class="duration">21h 20min</div>
+          <div class="route-line">
+            <div class="line"></div>
+            <div class="stops-badge">2 stops</div>
+            <div class="line"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">via IST · DEL</div>
+        </div>
+        <div class="time-block">
+          <div class="time">11:10<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport" style="font-size:9px;">BLR +1</div>
+        </div>
+      </div>
+      <div class="price-block">
+        <div class="price">₹65,879</div>
+        <div class="per">one-way</div>
+      </div>
+    </div>
+    <div class="card-badges">
+      <span class="badge badge-egencia">★ Volvo Negotiated Rate</span>
+      <span class="badge badge-best">✓ Refundable &amp; Changeable</span>
+      <span class="badge badge-best">⭐ Recommended</span>
+    </div>
+    <div class="details-toggle" id="toggle1" onclick="toggleDetails(event, 1)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </div>
+    <div class="details-body" id="details1">
+      <!-- Leg 1 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Gothenburg (GOT) → Istanbul (IST)</div>
+          <div class="leg-time">10:20 am → 2:50 pm &nbsp;·&nbsp; 3h 30min</div>
+          <div class="leg-meta">
+            <span>Turkish Airlines TK 1798</span>
+            <span>Airbus A321NEO</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">5h 25min layover in Istanbul (IST)</div>
+      <!-- Leg 2 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Istanbul (IST) → Delhi (DEL)</div>
+          <div class="leg-time">8:15 pm → 4:50 am +1 &nbsp;·&nbsp; 6h 5min</div>
+          <div class="leg-meta">
+            <span>Turkish Airlines TK 716</span>
+            <span>Boeing 777-300ER</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">3h 30min layover in Delhi (DEL)</div>
+      <!-- Leg 3 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Delhi (DEL) → Bengaluru (BLR)</div>
+          <div class="leg-time">8:20 am → 11:10 am &nbsp;·&nbsp; 2h 50min</div>
+          <div class="leg-meta">
+            <span>Turkish Airlines TK 7817 (operated by IndiGo)</span>
+            <span>Airbus A321</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <!-- Fare details -->
+      <div style="margin-top:16px;padding:14px;background:#f0f9f4;border:1px solid #86efac;border-radius:10px;">
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px;">Fare Options — Volvo Group India Negotiated Rate</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #86efac;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--navy);">Economy — Negotiated Rate</div>
+              <div style="font-size:11px;color:var(--green);margin-top:2px;">✓ Refundable &nbsp;·&nbsp; ✓ Changeable &nbsp;·&nbsp; 1 Checked bag &nbsp;·&nbsp; Power &amp; USB outlets</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--green);">₹65,879</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);opacity:.7;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--navy);">Economy RS — Negotiated Rate</div>
+              <div style="font-size:11px;color:var(--amber);margin-top:2px;">✓ Refundable with charge &nbsp;·&nbsp; ✓ Changeable with charge</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--amber);">₹67,979</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #f5b7b1;opacity:.7;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--red);">Economy FX — ⚠ Exceeds Policy</div>
+              <div style="font-size:11px;color:var(--red);margin-top:2px;">₹1,04,444 — above policy limit</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--red);">₹1,04,444</div>
+          </div>
+        </div>
+      </div>
+      <details class="screenshot-section">
+        <summary>View booking screenshot</summary>
+        <div class="screenshot-img">
+          <img src="/mnt/user-data/uploads/1772699037528_image.png" alt="Turkish Airlines screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'">
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═══ FLIGHT 2 — LOT POLISH (NOT RECOMMENDED) ═══ -->
+  <div class="flight-card" id="card2" onclick="selectFlight(2)">
+    <div class="ribbon-alt">ℹ &nbsp;Alternative — Cheapest option non-refundable · Very early departure</div>
+    <div class="card-header">
+      <div class="select-radio" id="radio2"></div>
+      <div class="airline-logo" style="font-size:10px;">LOT</div>
+      <div class="flight-main">
+        <div class="time-block">
+          <div class="time">7:50<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport">GOT</div>
+        </div>
+        <div class="flight-route">
+          <div class="duration">21h 35min</div>
+          <div class="route-line">
+            <div class="line"></div>
+            <div class="stops-badge">2 stops</div>
+            <div class="line"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">via WAW · DEL</div>
+        </div>
+        <div class="time-block">
+          <div class="time">8:55<span style="font-size:14px;font-weight:400">am</span></div>
+          <div class="airport" style="font-size:9px;">BLR +1</div>
+        </div>
+      </div>
+      <div class="price-block">
+        <div class="price">₹64,286</div>
+        <div class="per">from (non-refundable)</div>
+      </div>
+    </div>
+    <div class="card-badges">
+      <span class="badge badge-warn">✗ Non-refundable (cheapest fare)</span>
+      <span class="badge badge-warn">⚠ Departs 7:50 am — very early</span>
+    </div>
+    <div class="details-toggle" id="toggle2" onclick="toggleDetails(event, 2)">
+      <span>Flight details &amp; itinerary</span>
+      <span class="chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </div>
+    <div class="details-body" id="details2">
+      <!-- Leg 1 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Gothenburg (GOT) → Warsaw (WAW)</div>
+          <div class="leg-time">7:50 am → 9:25 am &nbsp;·&nbsp; 1h 35min</div>
+          <div class="leg-meta">
+            <span>LOT Polish Airlines LO 496</span>
+            <span>Embraer 195</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">6h 30min layover in Warsaw (WAW)</div>
+      <!-- Leg 2 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Warsaw (WAW) → Delhi (DEL)</div>
+          <div class="leg-time">3:55 pm → 2:55 am +1 &nbsp;·&nbsp; 7h 30min</div>
+          <div class="leg-meta">
+            <span>LOT Polish Airlines LO 71</span>
+            <span>Boeing 787-8</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <div class="layover-row">3h 5min layover in Delhi (DEL)</div>
+      <!-- Leg 3 -->
+      <div class="leg">
+        <div class="leg-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v3M16 21l4-4-4-4M20 17H9"/></svg></div>
+        <div class="leg-info">
+          <div class="leg-airports">Delhi (DEL) → Bengaluru (BLR)</div>
+          <div class="leg-time">6:00 am → 8:55 am &nbsp;·&nbsp; 2h 55min</div>
+          <div class="leg-meta">
+            <span>LOT Polish Airlines LO 4443 (operated by Air India)</span>
+            <span>Airbus A320</span>
+            <span>Economy</span>
+          </div>
+        </div>
+      </div>
+      <!-- Fare options -->
+      <div style="margin-top:16px;padding:14px;background:#fdf0ee;border:1px solid #f5b7b1;border-radius:10px;">
+        <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">Fare Options — Why not recommended</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #f5b7b1;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--navy);">Economy ECOSTAND</div>
+              <div style="font-size:11px;color:var(--red);margin-top:2px;">✗ Non-refundable &nbsp;·&nbsp; ✓ Changeable with charge &nbsp;·&nbsp; No Wi-Fi</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--red);">₹59,306</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--navy);">Economy ECOFULLFLX</div>
+              <div style="font-size:11px;color:var(--amber);margin-top:2px;">✓ Refundable &nbsp;·&nbsp; ✓ Changeable &nbsp;·&nbsp; No Wi-Fi &nbsp;·&nbsp; More expensive than Turkish</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--amber);">₹69,271</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--navy);">Economy (Refundable with charge)</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">✓ Refundable with charge &nbsp;·&nbsp; No Wi-Fi</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--navy);">₹64,286</div>
+          </div>
+        </div>
+      </div>
+      <details class="screenshot-section">
+        <summary>View booking screenshot</summary>
+        <div class="screenshot-img">
+          <img src="/mnt/user-data/uploads/1772699043602_image.png" alt="LOT Polish Airlines screenshot" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;font-size:13px;color:#888\'>Screenshot not available in preview.</div>'">
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div class="cta-summary">
+      <div class="selected-label">Your selection</div>
+      <div id="cta-info" class="selected-info">Turkish Airlines TK1798/716/7817 · Dep 10:20 am · ₹65,879</div>
+    </div>
+    <a href="https://www.egencia.co.in/flights/search?travelers=39652357&company_id=45534&origin=GOT&destination=BLR&departure_date=2026-07-08&trip_type=ONE_WAY&cabin=ECONOMY&adults=1" target="_blank" class="btn-secondary">
+      Search on Egencia ↗
+    </a>
+  </div>
+
+</main>
+
+<script>
+  function selectFlight(n) {
+    document.querySelectorAll('.flight-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('card' + n).classList.add('selected');
+    const flights = {
+      1: 'Turkish Airlines TK1798/716/7817 · Dep 10:20 am · ₹65,879',
+      2: 'LOT Polish Airlines LO496/71/4443 · Dep 7:50 am · from ₹64,286 (non-refundable)',
+    };
+    document.getElementById('cta-info').textContent = flights[n];
+  }
+
+  function toggleDetails(e, n) {
+    e.stopPropagation();
+    document.getElementById('details' + n).classList.toggle('open');
+    document.getElementById('toggle' + n).classList.toggle('open');
+  }
+
+  // Step navigation
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    const pages = ['index.html','flight-blr-to-gso.html','flight-gso-to-got.html','hotel-gso.html','hotel-gothenburg.html','flight-got-to-blr.html'];
+    if (pages.includes(href)) {
+      // plain navigation — no special handling needed
+    }
+  });
+
+  window.onload = () => selectFlight(1);
+</script>
+</body>
+</html>
